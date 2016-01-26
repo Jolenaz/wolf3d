@@ -9,12 +9,18 @@
 
 typedef struct s_env
 {
-	void	*mlx;
-	void	*win;
-	void	*img;
+	void		*mlx;
+	void		*win;
+	void		*img;
+	int			**map;
+	int			lmap;
+	int			hmap;
+	double		xcam;
+	double		ycam;
 }				t_env;
 
-void			ft_read_map(int fd);
-void			ft_creat_env(double **map);
+void			ft_print_map(t_env *e);
+void			ft_creat_env(t_env *e);
+void			ft_read(int fd);
 
 #endif

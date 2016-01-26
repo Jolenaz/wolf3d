@@ -1,4 +1,5 @@
 #include "wolf3d.h"
+#include <stdio.h>
 
 static int ft_nb_block_line(char *line)
 {
@@ -16,16 +17,16 @@ static int ft_nb_block_line(char *line)
 	return (i);
 }
 
-static double *ft_stockmap(char *line)
+static int *ft_stockmap(char *line, t_env *e)
 {
-	double *l;
+	int *l;
 	int i;
 	char *c;
 	
 	l = NULL;
 	i = 0;
 	c = line;
-	if ((l = (double*)malloc(sizeof(double) * ft_nb_block_line(line))) == NULL)
+	if ((l = (int*)malloc(sizeof(int) * ft_nb_block_line(line))) == NULL)
 		exit(0);
 	while (*c)
 	{
@@ -36,31 +37,43 @@ static double *ft_stockmap(char *line)
 		}
 		c++;
 	}
+	e->hmap = i;
 	return (l);
 }
 
-void	ft_read_map(int fd)
+void	ft_read_map(int fd, t_env *e)
 {
-	char *line;
-	int ret;
-	double **map;
-	int j;
+	char	*line;
+	int		ret;
+	int		j;
 	
 	ret = 0;
 	j = 0;
-	map = NULL;
-	if ((map = (double**)malloc(100 * sizeof(double*))) == NULL)
+	e->map = NULL;
+	if ((e->map = (int**)malloc(100 * sizeof(int*))) == NULL)
 		exit (0);
 	while ((ret = get_next_line(fd, &line)) > 0)
 	{
 		if (ret == -1)
 			exit(0);
-		map[j] = ft_stockmap(line);
+		e->map[j] = ft_stockmap(line, e);
 		j++;
 	}
+	e->lmap = j;
 	free(line);
 	close(fd);
-	ft_creat_env(map);
+//	ft_print_map(e);
+	ft_creat_env(e);
+	
 }
 
-
+void	ft_read(int fd)
+{
+	t_env *e;
+	e = NULL;
+	if ((e = (t_env*)malloc(sizeof(t_env))) == NULL)
+		exit(0);
+	e->lmap = 0;
+	e->hmap = 0;
+	ft_read_map(fd, e);	
+}
