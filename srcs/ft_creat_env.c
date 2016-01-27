@@ -6,51 +6,56 @@
 /*   By: jbelless <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/01/27 10:44:56 by jbelless          #+#    #+#             */
-/*   Updated: 2016/01/27 15:30:59 by jbelless         ###   ########.fr       */
+/*   Updated: 2016/01/27 17:09:07 by jbelless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "wolf3d.h"
 #include <stdio.h>
-/*
+
 double	ft_dist_wall(double de, t_env *e, unsigned int *couleur)
 {
-	int x = 0;
-	int y = 0;
-	double d[2];
+	int x[2];
+	int y[2];
+	double d[2] = {0,0};
 
+	y[0] = 0;
+	y[1] = 0;
+	x[0] = 0;
+	x[1] = 0;
+	printf("angle = %d\n", (int)((de + e->tcam) / M_PI * 180));
 	if (cos(de + e->tcam) != 0 )
 	{
-		while (x < e->lmap && e->map[x + 1][(int)((e->xcam - x) / tan(de + e->tcam) + e->ycam)] == 0)
+		while (x[0] < e->lmap && (y[0] = (int)((x[0] - e->xcam) / tan(de + e->tcam) + e->ycam)) >= 0 && e->map[x[0]][y[0]] == 0)
 		{
-			x++;
-			d[0] = hypot((double)x, ((e->xcam - x) / tan(de + e->tcam) + e->ycam));
+			d[0] = hypot((double)x[0], (double)y[0]);
+			x[0]++;
 		}
-		while (y < e->hmap && e->map[(int)((e->ycam - y) / tan(de + e->tcam) + e->xcam)][y] == 0)
+		while (y[1] < e->hmap && (x[1] = (int)((y[1] - e->ycam) * tan(de + e->tcam) + e->xcam)) >= 0 && e->map[x[1]][y[1]] == 0)
 		{
-			y++;
-			d[1] = hypot((double)y, ((e->ycam - y) / tan(de + e->tcam) + e->xcam));
+			d[1] = hypot((double)x[1], (double)y[1]);
+			y[1]++;
 		}
 	}
-	printf("%f, %f\n", d[0],d[1]);
+	printf("%d, %d\n", e->map[x[0]][y[0]], e->map[x[1]][y[1]]);
 	*couleur = 0;
 	return (d[0]);
 }
-*/
+
 void	ft_modim(t_env *e)
 {
 	double de;
 	double z = 0;
 	int i = 0;
-	//unsigned int couleur;
+	unsigned int couleur;
 
 	de = -60. / 180 * M_PI / 2;
-	while (de < 60 / 180 * M_PI / 2)
+	while (de <= 60. / 180 * M_PI / 2)
 	{
-	//	z = ft_dist_wall(de, e, &couleur);
+		z = ft_dist_wall(de, e, &couleur);
 		//ft_put_wall(z, i, e, couleur);
-		printf("____%f_____\n",de);
-		de = de + 60 / 180 * M_PI / 10;
+	//	printf("____%f__%d___\n",de,i);
+		de = de + 60. / 180 * M_PI / 6;
 		i++;
 	}
 	if (e->tcam !=0)
@@ -100,7 +105,7 @@ void	ft_creat_env(t_env *e)
 	e->win = mlx_new_window(e->mlx, SIZE_W, SIZE_W, "Wolf 3D");
 	e->img = mlx_new_image(e->mlx, SIZE_W, SIZE_W);
 	e->data = mlx_get_data_addr(e->img, &bpp, &ls, &endian);
-	e->xcam = 3;
+	e->xcam = 8;
 	e->ycam = 3;
 	e->tcam = 0;
 
