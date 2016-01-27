@@ -12,11 +12,13 @@ typedef struct s_env
 	void		*mlx;
 	void		*win;
 	void		*img;
+	char		*data;
 	int			**map;
 	int			lmap;
 	int			hmap;
 	double		xcam;
 	double		ycam;
+	double		tcam;
 }				t_env;
 
 void			ft_print_map(t_env *e);
