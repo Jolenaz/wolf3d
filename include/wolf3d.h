@@ -18,7 +18,10 @@ typedef struct s_env
 	int			hmap;
 	double		xcam;
 	double		ycam;
-	double		tcam;
+	double		xscreen;
+	double		yscreen;
+	double		xdir;
+	double		ydir;
 }				t_env;
 
 void			ft_print_map(t_env *e);
