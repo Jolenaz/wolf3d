@@ -4,7 +4,7 @@ NAME = wolf3d
 #_- Compiler -_#
 #==============#
 CC = gcc
-CFLAGS = -Werror -Wall -Wextra
+CFLAGS = -Werror -Wall -Wextra -g
 RM = rm -rf
 MAKE = make -sC
 

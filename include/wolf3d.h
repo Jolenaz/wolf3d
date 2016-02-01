@@ -12,6 +12,7 @@ typedef struct s_env
 	void		*mlx;
 	void		*win;
 	void		*img;
+	void		*img2;
 	char		*data;
 	int			**map;
 	int			lmap;
