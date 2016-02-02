@@ -1,6 +1,7 @@
 #ifndef WOLF3D_H
 # define WOLF3D_H
 # define SIZE_W 1000
+# define SIZE_T 200
 
 # include "mlx.h"
 # include "libft.h"
@@ -11,12 +12,11 @@ typedef struct s_env
 {
 	void		*mlx;
 	void		*win;
-	void		*img;
-	void		*img2;
-	char		*data;
-	int			**map;
+	void		**img;
+	char		**data;
 	int			lmap;
 	int			hmap;
+	int			**map;
 	double		xcam;
 	double		ycam;
 	double		xscreen;
