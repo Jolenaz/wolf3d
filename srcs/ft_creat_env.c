@@ -47,13 +47,13 @@ void	ft_cop_im(int texx, int texy, int x, int y, int wall, t_env *e, int side)
 
 	ptrc = (unsigned int*)malloc(sizeof(unsigned int));
 	if (wall == 1 || (wall == 13 && side == 0) || (wall == 14 && side == 0))
-		c = (unsigned char*)e->data[1] + texx * 4 + texy * 4 * SIZE_T + 4 * 25 * SIZE_T;
+		c = (unsigned char*)e->data[1] + texx * 4 + texy * 4 * SIZE_T;
 	else if (wall == 2 || (wall == 23 && side == 0) || (wall == 24 && side == 0))
-		c = (unsigned char*)e->data[2] + texx * 4 + texy * 4 * SIZE_T + 4 * 25 * SIZE_T;
+		c = (unsigned char*)e->data[2] + texx * 4 + texy * 4 * SIZE_T;
 	else if (wall == 3 || (wall == 13 && side == 1) || (wall == 23 && side == 1))
-		c = (unsigned char*)e->data[3] + texx * 4 + texy * 4 * SIZE_T + 4 * 25 * SIZE_T;
+		c = (unsigned char*)e->data[3] + texx * 4 + texy * 4 * SIZE_T;
 	else if (wall == 4 || (wall == 14 && side == 1) || (wall == 24 && side == 1))
-		c = (unsigned char*)e->data[4] + texx * 4 + texy * 4 * SIZE_T + 4 * 25 * SIZE_T;
+		c = (unsigned char*)e->data[4] + texx * 4 + texy * 4 * SIZE_T;
 	else
 		c = (unsigned char*)e->data[wall] + texx * 4 + texy * 4 * SIZE_T;
 	*((unsigned char*)ptrc) = *c;
@@ -73,15 +73,15 @@ void	ft_put_text_line(int x, int texx, int drawstart, int drawend, int wall, t_e
 	y = drawend;
 	while (y < SIZE_W)
 	{
-		currentdist =  SIZE_W / (2.0 * y - SIZE_W);
+		currentdist =  (double)SIZE_W / (2.0 * (double)y - (double)SIZE_W);
 		double weight;
 		weight = currentdist / distwall;
 		double currentfloorx;
 		double currentfloory;
 		int floortexx;
 		int floortexy;
-		currentfloorx = weight * floorxwall + (1.0 - weight) * e->xcam;
-		currentfloory = weight * floorywall + (1.0 - weight) * e->ycam;
+		currentfloorx = weight * floorxwall + (1.0 - weight) * (double)e->xcam;
+		currentfloory = weight * floorywall + (1.0 - weight) * (double)e->ycam;
 		floortexx = (int)(currentfloorx * (double)SIZE_T) % SIZE_T;
 		floortexy = (int)(currentfloory * (double)SIZE_T) % SIZE_T;
 		ft_cop_im(floortexx, floortexy, x, SIZE_W - y, 5, e, side);
@@ -194,6 +194,7 @@ void	ft_modim(t_env *e)
 			wallx = rayposx + ((mapy - rayposy + (1 - stepy) / 2) / raydiry) * raydirx;
 		else
 			wallx = rayposy + ((mapx - rayposx + (1 - stepx) / 2) / raydirx) * raydiry;
+		wallx -= floor(wallx);
 		int texx = (int)(wallx * (double)SIZE_T);
 		if (side == 0 && raydirx > 0)
 			texx = SIZE_T - texx - 1;
