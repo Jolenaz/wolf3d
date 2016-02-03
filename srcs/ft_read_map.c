@@ -70,7 +70,7 @@ void	ft_read_map(int fd, t_env *e)
 	e->lmap = j;
 	free(line);
 	close(fd);
-	ft_print_map(e);
+//	ft_print_map(e);
 	ft_creat_env(e);
 
 }

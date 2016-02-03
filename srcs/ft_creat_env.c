@@ -6,11 +6,12 @@
 /*   By: jbelless <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/01/27 10:44:56 by jbelless          #+#    #+#             */
-/*   Updated: 2016/02/02 16:43:13 by jbelless         ###   ########.fr       */
+/*   Updated: 2016/02/03 16:32:10 by jbelless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "wolf3d.h"
+#include <stdio.h>
 
 void	put_pixelle(int x, int y, unsigned int *couleur, t_env *e)
 {
@@ -52,8 +53,10 @@ void	ft_cop_im(int texx, int texy, int x, int y, int wall, t_env *e, int side)
 		c = (unsigned char*)e->data[3] + texx * 4 + texy * 4 * SIZE_T;
 	else if (wall == 4 || (wall == 14 && side == 1) || (wall == 24 && side == 1))
 		c = (unsigned char*)e->data[4] + texx * 4 + texy * 4 * SIZE_T;
-	else
+	else if(wall != 8)
 		c = (unsigned char*)e->data[wall] + texx * 4 + texy * 4 * SIZE_T;
+	else
+		c = (unsigned char*)e->data[wall] + texx * 4 + texy * 4 * 2000;
 	*((unsigned char*)ptrc) = *c;
 	*((unsigned char*)ptrc + 1) = *(c + 1);
 	*((unsigned char*)ptrc + 2) = *(c + 2);
@@ -83,10 +86,12 @@ void	ft_put_text_line(int x, int texx, int drawstart, int drawend, int wall, t_e
 		floortexx = (int)(currentfloorx * (double)SIZE_T) % SIZE_T;
 		floortexy = (int)(currentfloory * (double)SIZE_T) % SIZE_T;
 		if (e->map[(int)currentfloorx][(int)currentfloory] == 0)
+		{
+			ft_cop_im(floortexx, floortexy, x, SIZE_W - y, 5, e, side);
 			ft_cop_im(floortexx, floortexy, x, y, 6, e, side);
+		}
 		else 
 			ft_cop_im(floortexx, floortexy, x, y, 7, e, side);
-		ft_cop_im(floortexx, floortexy, x, SIZE_W - y, 5, e, side);
 		y++;
 	}
 	y = drawstart;
@@ -230,12 +235,34 @@ void	ft_modim(t_env *e)
 		x++;
 	}
 }
+
+void	ft_put_skybox(t_env *e)
+{
+	int x;
+	int texx;
+	int y;
+
+	x = 0;
+	while (x < SIZE_W)
+	{
+		texx = x + (int)(atan(e->ydir / e->xdir) / (M_PI) * 2000 + 1000);
+		y = 0;
+		while (y < 500)
+		{
+			ft_cop_im(texx, y, x, y, 8, e, 0);
+			y++;
+		}
+		x++;
+	}
+}
+
 void	ft_creat_img(t_env *e)
 {
 	int bpp;
 	int ls;
 	int endian;
-
+	
+	printf("%d\n",(int)(atan(e->ydir / e->xdir) / (M_PI) * 2000 + 1000));
 	bpp = 4;
 	ls = 4 * SIZE_W;
 	endian = 0;
@@ -248,11 +275,14 @@ void	ft_creat_img(t_env *e)
 	e->data[5] = mlx_get_data_addr(e->img[5], &bpp, &ls, &endian);
 	e->data[6] = mlx_get_data_addr(e->img[6], &bpp, &ls, &endian);
 	e->data[7] = mlx_get_data_addr(e->img[7], &bpp, &ls, &endian);
+	e->data[8] = mlx_get_data_addr(e->img[8], &bpp, &ls, &endian);
 	mlx_clear_window(e->mlx, e->win);
+	ft_put_skybox(e);
 	ft_modim(e);
 	mlx_put_image_to_window(e->mlx, e->win, e->img[0], 0, 0);
 	mlx_destroy_image(e->mlx, e->img[0]);
 }
+
 
 int		key_down_hook(int kc, t_env *e)
 {
@@ -260,7 +290,7 @@ int		key_down_hook(int kc, t_env *e)
 	double movespeed;
 	double tmp;
 
-	rotspeed = 0.3;
+	rotspeed = 10.0 / 180.0 * M_PI;
 	movespeed = 0.5;
 	mlx_do_key_autorepeatoff(e->mlx);
 	if (kc == 13 || kc == 126)
@@ -341,13 +371,14 @@ int		key_up_hook(int kc, t_env *e)
 		e->keytex = 1;	
 	return (0);
 }
+
 int		loop_hook(t_env *e)
 {
 	double movespeed;
 	double rotspeed;
 	double tmp;
 
-	rotspeed = 0.3;
+	rotspeed = 10.0 / 180.0 * M_PI;
 	movespeed = 0.5;
 	if (e->key13)
 	{
@@ -442,15 +473,14 @@ int expose_hook(t_env *e)
 	}
 	return (0);
 }
-	e->img[6] = mlx_xpm_file_to_image(e->mlx, "images/im6.xpm", &width, &width);
 
 void	ft_creat_env(t_env *e)
 {
 	int width = 256;
 	e->mlx = mlx_init();
 	e->win = mlx_new_window(e->mlx, SIZE_W, SIZE_W, "Wolf 3D");
-	e->xcam = 2;
-	e->ycam = 2;
+	e->xcam = 20;
+	e->ycam = 20;
 	e->xdir = -1;
 	e->ydir = 0;
 	e->xscreen = 0;
@@ -460,8 +490,8 @@ void	ft_creat_env(t_env *e)
 	e->key0 = 0;
 	e->key2 = 0;
 	e->keytex = 0;
-	e->img = (void**)malloc(sizeof(void*) * 8);
-	e->data = (char**)malloc(sizeof(char*) * 8);
+	e->img = (void**)malloc(sizeof(void*) * 9);
+	e->data = (char**)malloc(sizeof(char*) * 9);
 	e->img[1] = mlx_xpm_file_to_image(e->mlx, "images/im1.xpm", &width, &width);
 	e->img[2] = mlx_xpm_file_to_image(e->mlx, "images/im2.xpm", &width, &width);
 	e->img[3] = mlx_xpm_file_to_image(e->mlx, "images/im3.xpm", &width, &width);
@@ -469,6 +499,7 @@ void	ft_creat_env(t_env *e)
 	e->img[5] = mlx_xpm_file_to_image(e->mlx, "images/im5.xpm", &width, &width);
 	e->img[6] = mlx_xpm_file_to_image(e->mlx, "images/im6.xpm", &width, &width);
 	e->img[7] = mlx_xpm_file_to_image(e->mlx, "images/im7.xpm", &width, &width);
+	e->img[8] = mlx_xpm_file_to_image(e->mlx, "images/sb1.xpm", &width, &width);
 	mlx_key_down_hook(e->win, key_down_hook, e);
 	mlx_key_up_hook(e->win, key_up_hook, e);
 	mlx_loop_hook(e->mlx, loop_hook, e);
