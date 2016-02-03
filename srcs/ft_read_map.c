@@ -12,7 +12,7 @@ static int ft_nb_block_line(char *line)
 		i++;
 	while (*c)
 	{
-		if (*c >= '0' && *c <= '9' && *(c - 1) == ' ')
+		if (((*c >= '0' && *c <= '9') || *c == '-') && *(c - 1) == ' ')
 			i++;
 		c++;
 	}
@@ -30,7 +30,7 @@ static int *ft_stockmap(char *line, t_env *e)
 	c = line;
 	if ((l = (int*)malloc(sizeof(int) * ft_nb_block_line(line))) == NULL)
 		exit(0);
-	if (*c >= '0' && *c <= '9')
+	if ((*c >= '0' && *c <= '9') || *c == '-')
 	{
 		l[i] = atoi(c);
 		i++;
@@ -38,7 +38,7 @@ static int *ft_stockmap(char *line, t_env *e)
 	}
 	while (*c)
 	{
-		if (*c >= '0' && *c <= '9' && *(c - 1) == ' ')
+		if (((*c >= '0' && *c <= '9') || *c == '-') && *(c - 1) == ' ')
 		{
 			l[i] = atoi(c);
 			i++;
@@ -70,7 +70,7 @@ void	ft_read_map(int fd, t_env *e)
 	e->lmap = j;
 	free(line);
 	close(fd);
-	//	ft_print_map(e);
+	ft_print_map(e);
 	ft_creat_env(e);
 
 }

@@ -23,6 +23,13 @@ typedef struct s_env
 	double		yscreen;
 	double		xdir;
 	double		ydir;
+	int			key13;
+	int			key1;
+	int			key0;
+	int			key2;
+	int			key123;
+	int			key124;
+	int			keytex;
 }				t_env;
 
 void			ft_print_map(t_env *e);
