@@ -6,7 +6,7 @@
 /*   By: jbelless <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/01/27 10:44:56 by jbelless          #+#    #+#             */
-/*   Updated: 2016/02/03 16:32:10 by jbelless         ###   ########.fr       */
+/*   Updated: 2016/02/04 16:45:45 by jbelless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,17 +26,68 @@ void	put_pixelle(int x, int y, unsigned int *couleur, t_env *e)
 	*(c + 3) = *((unsigned char*)ptrc + 3);
 }
 
+void	put_pixelle_door(int x, int y, unsigned int *couleur, t_env *e)
+{
+	unsigned char	*c;
+	unsigned int	*ptrc;
+
+	ptrc = couleur;
+	c = (unsigned char*)e->data[100] + x * 4 + y * 4 * SIZE_W;
+	*c = *((unsigned char*)ptrc);
+	*(c + 1) = *((unsigned char*)ptrc + 1);
+	*(c + 2) = *((unsigned char*)ptrc + 2);
+	*(c + 3) = *((unsigned char*)ptrc + 3);
+}
+
+void	ft_init_ob_im(t_env *e)
+{
+	unsigned int couleur;
+	int x;
+	int y;
+
+	couleur = 0xff000000;
+	x = 0;
+	while (x < SIZE_W)
+	{
+		y = 0;
+		while (y < SIZE_W)
+		{
+
+			put_pixelle_door(x, y, &couleur, e);
+			y++;
+		}
+		x++;
+	}
+}
+
+
 int		ft_couleur(int wall, int side)
 {
-	if (wall == 1 || (wall == 13 && side == 0) || (wall == 14 && side == 0))
+	if (wall == 1 || (wall == 12 && side == 0) || (wall == 21 && side == 0) || (wall == 12 && side == 0))
 		return (0x000099);
-	else if (wall == 2 || (wall == 23 && side == 0) || (wall == 24 && side == 0))
+	else if (wall == 2 || (wall == 23 && side == 1) || (wall == 21 && side == 1) || (wall == 12 && side == 1))
 		return (0xff0000);
-	else if (wall == 3 || (wall == 13 && side == 1) || (wall == 23 && side == 1))
+	else if (wall == 3 || (wall == 23 && side == 0))
 		return (0xffff00);
-	else if (wall == 4 || (wall == 14 && side == 1) || (wall == 24 && side == 1))
+	else if (wall == 4)
 		return (0x66ff00);
 	return (0);
+}
+
+void	ft_cop_door(int texx, int texy, int x, int y, int wall, t_env *e)
+{
+	unsigned char	*c;
+	unsigned int	*ptrc;
+
+	ptrc = (unsigned int*)malloc(sizeof(unsigned int));
+	if (wall == -2)
+		c = NULL;
+	c = (unsigned char*)e->data[9] + texx * 4 + texy * 4 * SIZE_T;
+	*((unsigned char*)ptrc) = *c;
+	*((unsigned char*)ptrc + 1) = *(c + 1);
+	*((unsigned char*)ptrc + 2) = *(c + 2);
+	*((unsigned char*)ptrc + 3) = *(c + 3);
+	put_pixelle_door(x, y, ptrc, e);
 }
 
 void	ft_cop_im(int texx, int texy, int x, int y, int wall, t_env *e, int side)
@@ -45,24 +96,22 @@ void	ft_cop_im(int texx, int texy, int x, int y, int wall, t_env *e, int side)
 	unsigned int	*ptrc;
 
 	ptrc = (unsigned int*)malloc(sizeof(unsigned int));
-	if (wall == 1 || (wall == 13 && side == 0) || (wall == 14 && side == 0))
+	if (wall == 1 || (wall == 12 && side == 0) || (wall == 21 && side == 0) || (wall == 12 && side == 0))
 		c = (unsigned char*)e->data[1] + texx * 4 + texy * 4 * SIZE_T;
-	else if (wall == 2 || (wall == 23 && side == 0) || (wall == 24 && side == 0))
+	if (wall == 2 || (wall == 23 && side == 1) || (wall == 21 && side == 1) || (wall == 12 && side == 1))
 		c = (unsigned char*)e->data[2] + texx * 4 + texy * 4 * SIZE_T;
-	else if (wall == 3 || (wall == 13 && side == 1) || (wall == 23 && side == 1))
+	if (wall == 3 || (wall == 23 && side == 0))
 		c = (unsigned char*)e->data[3] + texx * 4 + texy * 4 * SIZE_T;
-	else if (wall == 4 || (wall == 14 && side == 1) || (wall == 24 && side == 1))
+	if (wall == 4)
 		c = (unsigned char*)e->data[4] + texx * 4 + texy * 4 * SIZE_T;
-	else if(wall != 8)
+	if(wall == 5 || wall == 6 || wall == 7)
 		c = (unsigned char*)e->data[wall] + texx * 4 + texy * 4 * SIZE_T;
-	else
-		c = (unsigned char*)e->data[wall] + texx * 4 + texy * 4 * 2000;
+	if(wall == 8)
+		c = (unsigned char*)e->data[wall] + texx * 4 + texy * 4 * 3000;
 	*((unsigned char*)ptrc) = *c;
 	*((unsigned char*)ptrc + 1) = *(c + 1);
 	*((unsigned char*)ptrc + 2) = *(c + 2);
 	*((unsigned char*)ptrc + 3) = *(c + 3);
-	if (side && wall != 5 && wall != 6)
-		*ptrc -= 0x010101;
 	put_pixelle(x, y, ptrc, e);
 }
 
@@ -85,7 +134,7 @@ void	ft_put_text_line(int x, int texx, int drawstart, int drawend, int wall, t_e
 		currentfloory = weight * floorywall + (1.0 - weight) * (double)e->ycam;
 		floortexx = (int)(currentfloorx * (double)SIZE_T) % SIZE_T;
 		floortexy = (int)(currentfloory * (double)SIZE_T) % SIZE_T;
-		if (e->map[(int)currentfloorx][(int)currentfloory] == 0)
+		if (e->map[(int)currentfloorx][(int)currentfloory] != -1)
 		{
 			ft_cop_im(floortexx, floortexy, x, SIZE_W - y, 5, e, side);
 			ft_cop_im(floortexx, floortexy, x, y, 6, e, side);
@@ -124,13 +173,110 @@ void	ft_putline(int x, int drawstart, int drawend, int wall, t_env *e, int side)
 	}
 }
 
+void	ft_put_door_line(int x, int texx, int drawstart, int drawend, int obj, t_env *e, int lineheight)
+{
+	int y;
+
+	y = drawstart;
+	while (y < drawend)
+	{
+		int d = y * 256 - SIZE_W * 128 + lineheight * 128;
+		int texy = ((d * SIZE_T) / lineheight) / 256;
+		ft_cop_door(texx, texy, x, y, obj, e);
+		y++;
+	}
+}
+
+void	ft_put_door(int x, t_env *e)
+{
+		double camerax = 2 * x /(double)SIZE_W - 1;
+		double rayposx = e->xcam;
+		double rayposy = e->ycam;
+		double raydirx = e->xdir + e->xscreen * camerax;
+		double raydiry = e->ydir + e->yscreen * camerax;
+		int mapx = (int)rayposx;
+		int mapy = (int)rayposy;
+		double sidedistx;
+		double sidedisty;
+		double deltadistx = sqrt(1 + (raydiry * raydiry) / (raydirx * raydirx));
+		double deltadisty = sqrt(1 + (raydirx * raydirx) / (raydiry * raydiry));
+		double perpwalldist;
+		int stepx;
+		int stepy;
+		int hit = 0;
+		int side;
+		if (raydirx < 0)
+		{
+			stepx = -1;
+			sidedistx = (rayposx - mapx) * deltadistx;
+		}
+		else
+		{
+			stepx = 1;
+			sidedistx = (1.0 - rayposx + mapx) * deltadistx;
+		}
+		if (raydiry < 0)
+		{
+			stepy = -1;
+			sidedisty = (rayposy - mapy) * deltadisty;
+		}
+		else
+		{
+			stepy = 1;
+			sidedisty = (1.0 - rayposy + mapy) * deltadisty;
+		}
+		while (hit == 0)
+		{
+			if (sidedistx < sidedisty)
+			{
+				sidedistx += deltadistx;
+				mapx += stepx;
+				side = 0;
+			}
+			else
+			{
+				sidedisty += deltadisty;
+				mapy += stepy;
+				side = 1;
+			}
+			if (e->map[mapx][mapy] < -1)
+				hit = 1;
+		}
+		if (side == 0)
+			perpwalldist = fabs((mapx - rayposx + (1 - stepx) /2) / raydirx);
+		else
+			perpwalldist = fabs((mapy - rayposy + (1 - stepy) /2) / raydiry);
+		int lineheight = (int)(SIZE_W / perpwalldist);
+		int drawstart = -lineheight / 2 + SIZE_W / 2;
+		if (drawstart < 0)
+			drawstart = 0;
+		int drawend = lineheight / 2 + SIZE_W / 2;
+		if (drawend > SIZE_W)
+			drawend = SIZE_W - 1;
+		double wallx;
+		if (side == 1)
+			wallx = rayposx + ((mapy - rayposy + (1 - stepy) / 2) / raydiry) * raydirx;
+		else
+			wallx = rayposy + ((mapx - rayposx + (1 - stepx) / 2) / raydirx) * raydiry;
+		wallx -= floor(wallx);
+		int texx = (int)(wallx * (double)SIZE_T);
+		if (side == 0 && raydirx > 0)
+			texx = SIZE_T - texx - 1;
+		if (side == 1 && raydiry < 0)
+			texx = SIZE_T - texx - 1;
+		if (e->keytex == 1)
+			ft_put_door_line(x, texx, drawstart, drawend, e->map[mapx][mapy], e, lineheight);
+}
+
 void	ft_modim(t_env *e)
 {
 	int x;
+	int rep;
 
 	x = 0;
 	while (x < SIZE_W)
 	{
+		rep = 0;
 		double camerax = 2 * x /(double)SIZE_W - 1;
 		double rayposx = e->xcam;
 		double rayposy = e->ycam;
@@ -183,11 +329,14 @@ void	ft_modim(t_env *e)
 			}
 			if (e->map[mapx][mapy] > 0)
 				hit = 1;
+			else if (e->map[mapx][mapy] < -1)
+				rep = 1;
 		}
 		if (side == 0)
 			perpwalldist = fabs((mapx - rayposx + (1 - stepx) /2) / raydirx);
 		else
 			perpwalldist = fabs((mapy - rayposy + (1 - stepy) /2) / raydiry);
+		e->zbuff[x] = perpwalldist;
 		int lineheight = (int)(SIZE_W / perpwalldist);
 		int drawstart = -lineheight / 2 + SIZE_W / 2;
 		if (drawstart < 0)
@@ -231,7 +380,9 @@ void	ft_modim(t_env *e)
 		if (e->keytex == 0)
 			ft_putline(x, drawstart, drawend, e->map[mapx][mapy], e, side);
 		else
-			ft_put_text_line(x, texx, drawstart, drawend, e->map[mapx][mapy], e, side, lineheight, perpwalldist, floorxwall, floorywall);	
+			ft_put_text_line(x, texx, drawstart, drawend, e->map[mapx][mapy], e, side, lineheight, perpwalldist, floorxwall, floorywall);
+		if (rep)
+			ft_put_door(x, e);
 		x++;
 	}
 }
@@ -245,7 +396,7 @@ void	ft_put_skybox(t_env *e)
 	x = 0;
 	while (x < SIZE_W)
 	{
-		texx = x + (int)(atan(e->ydir / e->xdir) / (M_PI) * 2000 + 1000);
+		texx = x + (int)(atan2(e->xdir, e->ydir) / M_PI * 3000) + 3000;
 		y = 0;
 		while (y < 500)
 		{
@@ -262,12 +413,13 @@ void	ft_creat_img(t_env *e)
 	int ls;
 	int endian;
 	
-	printf("%d\n",(int)(atan(e->ydir / e->xdir) / (M_PI) * 2000 + 1000));
 	bpp = 4;
 	ls = 4 * SIZE_W;
 	endian = 0;
 	e->img[0] = mlx_new_image(e->mlx, SIZE_W, SIZE_W);
+	e->img[100] = mlx_new_image(e->mlx, SIZE_W, SIZE_W);
 	e->data[0] = mlx_get_data_addr(e->img[0], &bpp, &ls, &endian);
+	e->data[100] = mlx_get_data_addr(e->img[100], &bpp, &ls, &endian);
 	e->data[1] = mlx_get_data_addr(e->img[1], &bpp, &ls, &endian);
 	e->data[2] = mlx_get_data_addr(e->img[2], &bpp, &ls, &endian);
 	e->data[3] = mlx_get_data_addr(e->img[3], &bpp, &ls, &endian);
@@ -276,11 +428,16 @@ void	ft_creat_img(t_env *e)
 	e->data[6] = mlx_get_data_addr(e->img[6], &bpp, &ls, &endian);
 	e->data[7] = mlx_get_data_addr(e->img[7], &bpp, &ls, &endian);
 	e->data[8] = mlx_get_data_addr(e->img[8], &bpp, &ls, &endian);
+	e->data[9] = mlx_get_data_addr(e->img[9], &bpp, &ls, &endian);
+	e->data[10] = mlx_get_data_addr(e->img[10], &bpp, &ls, &endian);
 	mlx_clear_window(e->mlx, e->win);
+	ft_init_ob_im(e);
 	ft_put_skybox(e);
 	ft_modim(e);
 	mlx_put_image_to_window(e->mlx, e->win, e->img[0], 0, 0);
+	mlx_put_image_to_window(e->mlx, e->win, e->img[100], 0, 0);
 	mlx_destroy_image(e->mlx, e->img[0]);
+	mlx_destroy_image(e->mlx, e->img[100]);
 }
 
 
@@ -490,8 +647,8 @@ void	ft_creat_env(t_env *e)
 	e->key0 = 0;
 	e->key2 = 0;
 	e->keytex = 0;
-	e->img = (void**)malloc(sizeof(void*) * 9);
-	e->data = (char**)malloc(sizeof(char*) * 9);
+	e->img = (void**)malloc(sizeof(void*) * 101);
+	e->data = (char**)malloc(sizeof(char*) * 101);
 	e->img[1] = mlx_xpm_file_to_image(e->mlx, "images/im1.xpm", &width, &width);
 	e->img[2] = mlx_xpm_file_to_image(e->mlx, "images/im2.xpm", &width, &width);
 	e->img[3] = mlx_xpm_file_to_image(e->mlx, "images/im3.xpm", &width, &width);
@@ -499,7 +656,9 @@ void	ft_creat_env(t_env *e)
 	e->img[5] = mlx_xpm_file_to_image(e->mlx, "images/im5.xpm", &width, &width);
 	e->img[6] = mlx_xpm_file_to_image(e->mlx, "images/im6.xpm", &width, &width);
 	e->img[7] = mlx_xpm_file_to_image(e->mlx, "images/im7.xpm", &width, &width);
-	e->img[8] = mlx_xpm_file_to_image(e->mlx, "images/sb1.xpm", &width, &width);
+	e->img[8] = mlx_xpm_file_to_image(e->mlx, "images/sb2.xpm", &width, &width);
+	e->img[9] = mlx_xpm_file_to_image(e->mlx, "images/obj1.xpm", &width, &width);
+	e->img[10] = mlx_xpm_file_to_image(e->mlx, "images/obj2.xpm", &width, &width);
 	mlx_key_down_hook(e->win, key_down_hook, e);
 	mlx_key_up_hook(e->win, key_up_hook, e);
 	mlx_loop_hook(e->mlx, loop_hook, e);

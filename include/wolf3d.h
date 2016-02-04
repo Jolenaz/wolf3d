@@ -17,6 +17,7 @@ typedef struct s_env
 	int			lmap;
 	int			hmap;
 	int			**map;
+	double		zbuff[SIZE_W];
 	double		xcam;
 	double		ycam;
 	double		xscreen;
