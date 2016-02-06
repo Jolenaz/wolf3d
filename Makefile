@@ -72,6 +72,8 @@ SRC_NAME = main.c \
 		ft_read_map.c \
 		ft_print_map.c \
 		ft_creat_env.c \
+		ft_sort_obj.c \
+		ft_creat_obj_env.c \
 
 OBJ_NAME = $(SRC_NAME:.c=.o)
 

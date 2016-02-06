@@ -6,7 +6,7 @@
 /*   By: jbelless <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/01/27 10:44:56 by jbelless          #+#    #+#             */
-/*   Updated: 2016/02/04 16:45:45 by jbelless         ###   ########.fr       */
+/*   Updated: 2016/02/06 22:50:33 by jbelless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -189,83 +189,83 @@ void	ft_put_door_line(int x, int texx, int drawstart, int drawend, int obj, t_en
 
 void	ft_put_door(int x, t_env *e)
 {
-		double camerax = 2 * x /(double)SIZE_W - 1;
-		double rayposx = e->xcam;
-		double rayposy = e->ycam;
-		double raydirx = e->xdir + e->xscreen * camerax;
-		double raydiry = e->ydir + e->yscreen * camerax;
-		int mapx = (int)rayposx;
-		int mapy = (int)rayposy;
-		double sidedistx;
-		double sidedisty;
-		double deltadistx = sqrt(1 + (raydiry * raydiry) / (raydirx * raydirx));
-		double deltadisty = sqrt(1 + (raydirx * raydirx) / (raydiry * raydiry));
-		double perpwalldist;
-		int stepx;
-		int stepy;
-		int hit = 0;
-		int side;
-		if (raydirx < 0)
+	double camerax = 2 * x /(double)SIZE_W - 1;
+	double rayposx = e->xcam;
+	double rayposy = e->ycam;
+	double raydirx = e->xdir + e->xscreen * camerax;
+	double raydiry = e->ydir + e->yscreen * camerax;
+	int mapx = (int)rayposx;
+	int mapy = (int)rayposy;
+	double sidedistx;
+	double sidedisty;
+	double deltadistx = sqrt(1 + (raydiry * raydiry) / (raydirx * raydirx));
+	double deltadisty = sqrt(1 + (raydirx * raydirx) / (raydiry * raydiry));
+	double perpwalldist;
+	int stepx;
+	int stepy;
+	int hit = 0;
+	int side;
+	if (raydirx < 0)
+	{
+		stepx = -1;
+		sidedistx = (rayposx - mapx) * deltadistx;
+	}
+	else
+	{
+		stepx = 1;
+		sidedistx = (1.0 - rayposx + mapx) * deltadistx;
+	}
+	if (raydiry < 0)
+	{
+		stepy = -1;
+		sidedisty = (rayposy - mapy) * deltadisty;
+	}
+	else
+	{
+		stepy = 1;
+		sidedisty = (1.0 - rayposy + mapy) * deltadisty;
+	}
+	while (hit == 0)
+	{
+		if (sidedistx < sidedisty)
 		{
-			stepx = -1;
-			sidedistx = (rayposx - mapx) * deltadistx;
+			sidedistx += deltadistx;
+			mapx += stepx;
+			side = 0;
 		}
 		else
 		{
-			stepx = 1;
-			sidedistx = (1.0 - rayposx + mapx) * deltadistx;
+			sidedisty += deltadisty;
+			mapy += stepy;
+			side = 1;
 		}
-		if (raydiry < 0)
-		{
-			stepy = -1;
-			sidedisty = (rayposy - mapy) * deltadisty;
-		}
-		else
-		{
-			stepy = 1;
-			sidedisty = (1.0 - rayposy + mapy) * deltadisty;
-		}
-		while (hit == 0)
-		{
-			if (sidedistx < sidedisty)
-			{
-				sidedistx += deltadistx;
-				mapx += stepx;
-				side = 0;
-			}
-			else
-			{
-				sidedisty += deltadisty;
-				mapy += stepy;
-				side = 1;
-			}
-			if (e->map[mapx][mapy] < -1)
-				hit = 1;
-		}
-		if (side == 0)
-			perpwalldist = fabs((mapx - rayposx + (1 - stepx) /2) / raydirx);
-		else
-			perpwalldist = fabs((mapy - rayposy + (1 - stepy) /2) / raydiry);
-		int lineheight = (int)(SIZE_W / perpwalldist);
-		int drawstart = -lineheight / 2 + SIZE_W / 2;
-		if (drawstart < 0)
-			drawstart = 0;
-		int drawend = lineheight / 2 + SIZE_W / 2;
-		if (drawend > SIZE_W)
-			drawend = SIZE_W - 1;
-		double wallx;
-		if (side == 1)
-			wallx = rayposx + ((mapy - rayposy + (1 - stepy) / 2) / raydiry) * raydirx;
-		else
-			wallx = rayposy + ((mapx - rayposx + (1 - stepx) / 2) / raydirx) * raydiry;
-		wallx -= floor(wallx);
-		int texx = (int)(wallx * (double)SIZE_T);
-		if (side == 0 && raydirx > 0)
-			texx = SIZE_T - texx - 1;
-		if (side == 1 && raydiry < 0)
-			texx = SIZE_T - texx - 1;
-		if (e->keytex == 1)
-			ft_put_door_line(x, texx, drawstart, drawend, e->map[mapx][mapy], e, lineheight);
+		if (e->map[mapx][mapy] < -1)
+			hit = 1;
+	}
+	if (side == 0)
+		perpwalldist = fabs((mapx - rayposx + (1 - stepx) /2) / raydirx);
+	else
+		perpwalldist = fabs((mapy - rayposy + (1 - stepy) /2) / raydiry);
+	int lineheight = (int)(SIZE_W / perpwalldist);
+	int drawstart = -lineheight / 2 + SIZE_W / 2;
+	if (drawstart < 0)
+		drawstart = 0;
+	int drawend = lineheight / 2 + SIZE_W / 2;
+	if (drawend > SIZE_W)
+		drawend = SIZE_W - 1;
+	double wallx;
+	if (side == 1)
+		wallx = rayposx + ((mapy - rayposy + (1 - stepy) / 2) / raydiry) * raydirx;
+	else
+		wallx = rayposy + ((mapx - rayposx + (1 - stepx) / 2) / raydirx) * raydiry;
+	wallx -= floor(wallx);
+	int texx = (int)(wallx * (double)SIZE_T);
+	if (side == 0 && raydirx > 0)
+		texx = SIZE_T - texx - 1;
+	if (side == 1 && raydiry < 0)
+		texx = SIZE_T - texx - 1;
+	if (e->keytex == 1)
+		ft_put_door_line(x, texx, drawstart, drawend, e->map[mapx][mapy], e, lineheight);
 }
 
 void	ft_modim(t_env *e)
@@ -407,18 +407,70 @@ void	ft_put_skybox(t_env *e)
 	}
 }
 
+void	ft_put_obj(t_env *e)
+{
+	int i;
+
+	i = 0;
+	while (i < e->nbobj)
+	{
+		double xobj = e->tabobj[i].x - e->xcam;
+		double yobj = e->tabobj[i].y - e->y:cam;
+		double invdev = 1.0 / (e->xscreen * e->ydir - e->xdir * e->yscreen);
+		double transformx = invdev * (e->ydir * xobj - e->xdir * yobj);
+		double transformy = invdev * (-e->yscreen * xobj + e->xscreen yobj);
+		int xscreenobj = (int)((SIZE_W / 2) * (1 + transformx / transformey));
+		int objheight = abs((int)(SIZE_W / transformy));
+		int drawstarty = -objheight / 2 + SIZE_W / 2;
+		if (drawstarty < 0)
+			drawstarty= 0;
+		int drawendy = objheight / 2 + SIZE_W / 2;
+		if (drawendy > SIZE_W)
+			drawendy = SIZE_W - 1;
+		int objwidth = abs((int)(SIZE_W / transformy));
+		int drawstartx = -objwidth / 2 + xscreenobj;
+		if (drewastartx < 0)
+			drawstartx = 0;
+		int drawendx = objwidth / 2 + xscreenobj;
+		if (drawendx > SIZE_W)
+			drawendx = SIZE_W - 1;
+		int x = drawstartx;
+		int y;
+		int texx;
+		int texy;
+		while (x < drawendx)
+		{
+			y = drawstarty;
+			texx = (int)(256 * (x - (-objwidth / 2 + xscreenobj)) * SIZE_O / objwidth) / 256;
+			if (transformy > 0 && x > 0 && x < SIZE_W && transformy < e->zbuff[x])
+			{
+				while (y < drawendy)
+				{
+					int d = y * 256 - SIZE_W * 128 + objheight * 128;
+					texy = ((d * SIZE_O) / objheight) / 256;
+					ft_cop_im(texx, texy, x, y, e->tabobj[i].type, e, 0);
+					y++;
+				}
+			}
+			x++;
+		}
+	}
+}
+
 void	ft_creat_img(t_env *e)
 {
 	int bpp;
 	int ls;
 	int endian;
-	
+
 	bpp = 4;
 	ls = 4 * SIZE_W;
 	endian = 0;
 	e->img[0] = mlx_new_image(e->mlx, SIZE_W, SIZE_W);
+	e->img[50] = mlx_new_image(e->mlx, SIZE_W, SIZE_W);
 	e->img[100] = mlx_new_image(e->mlx, SIZE_W, SIZE_W);
 	e->data[0] = mlx_get_data_addr(e->img[0], &bpp, &ls, &endian);
+	e->data[50] = mlx_get_data_addr(e->img[50], &bpp, &ls, &endian);
 	e->data[100] = mlx_get_data_addr(e->img[100], &bpp, &ls, &endian);
 	e->data[1] = mlx_get_data_addr(e->img[1], &bpp, &ls, &endian);
 	e->data[2] = mlx_get_data_addr(e->img[2], &bpp, &ls, &endian);
@@ -432,12 +484,15 @@ void	ft_creat_img(t_env *e)
 	e->data[10] = mlx_get_data_addr(e->img[10], &bpp, &ls, &endian);
 	mlx_clear_window(e->mlx, e->win);
 	ft_init_ob_im(e);
+	ft_sort_obj(e);
 	ft_put_skybox(e);
 	ft_modim(e);
+	ft_put_obj(e);
 	mlx_put_image_to_window(e->mlx, e->win, e->img[0], 0, 0);
 	mlx_put_image_to_window(e->mlx, e->win, e->img[100], 0, 0);
+	mlx_put_image_to_window(e->mlx, e->win, e->img[50], 0, 0);
 	mlx_destroy_image(e->mlx, e->img[0]);
-	mlx_destroy_image(e->mlx, e->img[100]);
+	mlx_destroy_image(e->mlx, e->img[50]);
 }
 
 
@@ -636,8 +691,8 @@ void	ft_creat_env(t_env *e)
 	int width = 256;
 	e->mlx = mlx_init();
 	e->win = mlx_new_window(e->mlx, SIZE_W, SIZE_W, "Wolf 3D");
-	e->xcam = 20;
-	e->ycam = 20;
+	e->xcam = 23;
+	e->ycam = 13;
 	e->xdir = -1;
 	e->ydir = 0;
 	e->xscreen = 0;

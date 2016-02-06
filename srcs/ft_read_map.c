@@ -58,9 +58,12 @@ void	ft_read_map(int fd, t_env *e)
 	ret = 0;
 	j = 0;
 	e->map = NULL;
+	e->map2 = NULL;
 	if ((e->map = (int**)malloc(100 * sizeof(int*))) == NULL)
 		exit (0);
-	while ((ret = get_next_line(fd, &line)) > 0)
+	if ((e->map2 = (int**)malloc(100 * sizeof(int*))) == NULL)
+		exit (0);
+	while ((ret = get_next_line(fd, &line)) > 0 && ft_strlen(line) != 0)
 	{
 		if (ret == -1)
 			exit(0);
@@ -68,9 +71,19 @@ void	ft_read_map(int fd, t_env *e)
 		j++;
 	}
 	e->lmap = j;
+	j = 0;
+	while ((ret = get_next_line(fd, &line)) > 0)
+	{
+		if (ret == -1)
+			exit(0);
+		e->map2[j] = ft_stockmap(line, e);
+		j++;
+	}
 	free(line);
 	close(fd);
 //	ft_print_map(e);
+//	ft_print_map2(e);
+	ft_creat_obj_env(e);
 	ft_creat_env(e);
 
 }
