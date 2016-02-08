@@ -140,7 +140,7 @@ static char *ob2[] = {
 "h. c #8B7762",
 "j. c #8E7C65",
 "k. c #937E65",
-"l. c green",
+"l. c #FF000000",
 "z. c #A9804F",
 "x. c #A58152",
 "c. c #AB8355",

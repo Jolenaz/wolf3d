@@ -17,17 +17,40 @@ typedef struct	s_obj
 	double		dist;
 }				t_obj;
 
+typedef struct s_zdoor
+{
+	int			mapx;
+	int			mapy;
+	int			stepx;
+	int			stepy;
+	double		rayposx;
+	double		rayposy;
+	double		raydirx;
+	double		raydiry;
+	int			side;
+}				t_zdoor;
+
 typedef struct	s_env
 {
 	void		*mlx;
 	void		*win;
 	void		**img;
+	void		**img_wall;
+	void		**img_sb;
+	void		**img_floor;
+	void		**img_obj;
 	char		**data;
+	char		**data_wall;
+	char		**data_sb;
+	char		**data_floor;
+	char		**data_obj;
 	int			lmap;
 	int			hmap;
 	int			**map;
 	int			**map2;
 	double		zbuff[SIZE_W];
+	double		zisdoor[SIZE_W];
+	t_zdoor		zdoor[SIZE_W];
 	double		xcam;
 	double		ycam;
 	double		xscreen;
