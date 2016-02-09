@@ -6,12 +6,13 @@
 /*   By: jbelless <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/01/27 10:44:56 by jbelless          #+#    #+#             */
-/*   Updated: 2016/02/09 10:39:01 by jbelless         ###   ########.fr       */
+/*   Updated: 2016/02/09 16:37:46 by jbelless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "wolf3d.h"
 #include <stdio.h>
+#include <time.h>
 
 void	put_pixelle(int x, int y, unsigned int *couleur, t_env *e)
 {
@@ -525,34 +526,42 @@ int		key_down_hook(int kc, t_env *e)
 	mlx_do_key_autorepeatoff(e->mlx);
 	if (kc == 13 || kc == 126)
 	{
-		if (e->map[(int)(e->xcam + e->xdir * 1.1 *movespeed)][(int)e->ycam] <= 0)
+		if (e->map[(int)(e->xcam + e->xdir * 1.1 *movespeed)][(int)e->ycam] <= 0 &&
+				e->map2[(int)(e->xcam + e->xdir * 1.1 *movespeed)][(int)e->ycam] <= 0)
 			e->xcam += e->xdir * movespeed;
-		if (e->map[(int)e->xcam][(int)(e->ycam + e->ydir * 1.1 * movespeed)] <= 0)
+		if (e->map[(int)e->xcam][(int)(e->ycam + e->ydir * 1.1 * movespeed)] <= 0 &&
+				e->map2[(int)e->xcam][(int)(e->ycam + e->ydir * 1.1 * movespeed)] <= 0)
 			e->ycam += e->ydir * movespeed;
 		e->key13 = 1;
 	}
 	if (kc == 1 || kc == 125)
 	{
 		e->key1 = 1;
-		if (e->map[(int)(e->xcam - e->xdir * 1.1 * movespeed)][(int)e->ycam] <= 0)
+		if (e->map[(int)(e->xcam - e->xdir * 1.1 * movespeed)][(int)e->ycam] <= 0 &&
+				e->map2[(int)(e->xcam - e->xdir * 1.1 * movespeed)][(int)e->ycam] <= 0)
 			e->xcam -= e->xdir * movespeed;
-		if (e->map[(int)e->xcam][(int)(e->ycam - e->ydir * 1.1 * movespeed)] <= 0)
+		if (e->map[(int)e->xcam][(int)(e->ycam - e->ydir * 1.1 * movespeed)] <= 0 &&
+				e->map2[(int)e->xcam][(int)(e->ycam - e->ydir * 1.1 * movespeed)] <= 0)
 			e->ycam -= e->ydir * movespeed;
 	}
 	if (kc == 0)
 	{
 		e->key0 = 1;
-		if (e->map[(int)(e->xcam - e->xscreen * 1.1 * movespeed)][(int)e->ycam] <= 0)
+		if (e->map[(int)(e->xcam - e->xscreen * 1.1 * movespeed)][(int)e->ycam] <= 0 &&
+				e->map2[(int)(e->xcam - e->xscreen * 1.1 * movespeed)][(int)e->ycam] <= 0)
 			e->xcam -= e->xscreen * movespeed;
-		if (e->map[(int)e->xcam][(int)(e->ycam - e->yscreen * 1.1 * movespeed)] <= 0)
+		if (e->map[(int)e->xcam][(int)(e->ycam - e->yscreen * 1.1 * movespeed)] <= 0 &&
+				e->map2[(int)e->xcam][(int)(e->ycam - e->yscreen * 1.1 * movespeed)] <= 0)
 			e->ycam -= e->yscreen * movespeed;
 	}
 	if (kc == 2)
 	{
 		e->key2 = 1;
-		if (e->map[(int)(e->xcam + e->xscreen * 1.1 * movespeed)][(int)e->ycam] <= 0)
+		if (e->map[(int)(e->xcam + e->xscreen * 1.1 * movespeed)][(int)e->ycam] <= 0 &&
+				e->map2[(int)(e->xcam + e->xscreen * 1.1 * movespeed)][(int)e->ycam] <= 0)
 			e->xcam += e->xscreen * movespeed;
-		if (e->map[(int)e->xcam][(int)(e->ycam + e->yscreen * 1.1 * movespeed)] <= 0)
+		if (e->map[(int)e->xcam][(int)(e->ycam + e->yscreen * 1.1 * movespeed)] <= 0 &&
+				e->map2[(int)e->xcam][(int)(e->ycam + e->yscreen * 1.1 * movespeed)] <= 0)
 			e->ycam += e->yscreen * movespeed;
 	}
 	if (kc == 123)
@@ -627,34 +636,44 @@ int		loop_hook(t_env *e)
 	double rotspeed;
 	double tmp;
 
+
+	printf("%lu\n",clock() / 1000);
 	rotspeed = 10.0 / 180.0 * M_PI;
 	movespeed = 0.5;
 	if (e->key13)
 	{
-		if (e->map[(int)(e->xcam + e->xdir * 1.1 *movespeed)][(int)e->ycam] <= 0)
+		if (e->map[(int)(e->xcam + e->xdir * 1.1 *movespeed)][(int)e->ycam] <= 0 && 
+				e->map2[(int)(e->xcam + e->xdir * 1.1 *movespeed)][(int)e->ycam] <= 0)
 			e->xcam += e->xdir * movespeed;
-		if (e->map[(int)e->xcam][(int)(e->ycam + e->ydir * 1.1 * movespeed)] <= 0)
+		if (e->map[(int)e->xcam][(int)(e->ycam + e->ydir * 1.1 * movespeed)] <= 0 &&
+				e->map2[(int)e->xcam][(int)(e->ycam + e->ydir * 1.1 * movespeed)] <= 0)
 			e->ycam += e->ydir * movespeed;
 	}
 	if (e->key1)
 	{
-		if (e->map[(int)(e->xcam - e->xdir * 1.1 * movespeed)][(int)e->ycam] <= 0)
+		if (e->map[(int)(e->xcam - e->xdir * 1.1 * movespeed)][(int)e->ycam] <= 0 &&
+				e->map2[(int)(e->xcam - e->xdir * 1.1 * movespeed)][(int)e->ycam] <= 0)
 			e->xcam -= e->xdir * movespeed;
-		if (e->map[(int)e->xcam][(int)(e->ycam - e->ydir * 1.1 * movespeed)] <= 0)
+		if (e->map[(int)e->xcam][(int)(e->ycam - e->ydir * 1.1 * movespeed)] <= 0 &&
+				e->map2[(int)e->xcam][(int)(e->ycam - e->ydir * 1.1 * movespeed)] <= 0)
 			e->ycam -= e->ydir * movespeed;
 	}
 	if (e->key0)
 	{
-		if (e->map[(int)(e->xcam - e->xscreen * 1.1 * movespeed)][(int)e->ycam] <= 0)
+		if (e->map[(int)(e->xcam - e->xscreen * 1.1 * movespeed)][(int)e->ycam] <= 0 &&
+				e->map2[(int)(e->xcam - e->xscreen * 1.1 * movespeed)][(int)e->ycam] <= 0)
 			e->xcam -= e->xscreen * movespeed;
-		if (e->map[(int)e->xcam][(int)(e->ycam - e->yscreen * 1.1 * movespeed)] <= 0)
+		if (e->map[(int)e->xcam][(int)(e->ycam - e->yscreen * 1.1 * movespeed)] <= 0 &&
+				e->map2[(int)e->xcam][(int)(e->ycam - e->yscreen * 1.1 * movespeed)] <= 0)
 			e->ycam -= e->yscreen * movespeed;
 	}
 	if (e->key2)
 	{
-		if (e->map[(int)(e->xcam + e->xscreen * 1.1 * movespeed)][(int)e->ycam] <= 0)
+		if (e->map[(int)(e->xcam + e->xscreen * 1.1 * movespeed)][(int)e->ycam] <= 0 &&
+				e->map2[(int)(e->xcam + e->xscreen * 1.1 * movespeed)][(int)e->ycam] <= 0)
 			e->xcam += e->xscreen * movespeed;
-		if (e->map[(int)e->xcam][(int)(e->ycam + e->yscreen * 1.1 * movespeed)] <= 0)
+		if (e->map[(int)e->xcam][(int)(e->ycam + e->yscreen * 1.1 * movespeed)] <= 0 &&
+				e->map2[(int)e->xcam][(int)(e->ycam + e->yscreen * 1.1 * movespeed)] <= 0)
 			e->ycam += e->yscreen * movespeed;
 	}
 	if (e->key124)
