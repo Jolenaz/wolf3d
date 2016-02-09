@@ -61,11 +61,13 @@ typedef struct	s_env
 	int			key1;
 	int			key0;
 	int			key2;
+	int			key49;
 	int			key123;
 	int			key124;
 	int			keytex;
 	t_obj		*tabobj;
 	int			nbobj;
+	int			dd;
 }				t_env;
 
 void			ft_print_map(t_env *e);

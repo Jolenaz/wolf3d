@@ -6,7 +6,7 @@
 /*   By: jbelless <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/01/27 10:44:56 by jbelless          #+#    #+#             */
-/*   Updated: 2016/02/08 17:04:57 by jbelless         ###   ########.fr       */
+/*   Updated: 2016/02/09 10:39:01 by jbelless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ void	ft_cop_door(int texx, int texy, int x, int y, int door, t_env *e)
 	ptrc = (unsigned int*)malloc(sizeof(unsigned int));
 	if (door == -2)
 		c = NULL;
-	c = (unsigned char*)e->data_wall[5] + texx * 4 + texy * 4 * SIZE_T;
+	c = (unsigned char*)e->data_wall[5] + (texx + e->dd) * 4 + texy * 8 * SIZE_T;
 	*((unsigned char*)ptrc) = *c;
 	*((unsigned char*)ptrc + 1) = *(c + 1);
 	*((unsigned char*)ptrc + 2) = *(c + 2);
@@ -577,6 +577,8 @@ int		key_down_hook(int kc, t_env *e)
 	}
 	if (kc == 53)
 		exit(0);
+	if (kc == 49)
+		e->key49 = 1;
 	ft_creat_img(e);
 	return (0);
 }
@@ -600,6 +602,23 @@ int		key_up_hook(int kc, t_env *e)
 	else if (kc == 17)
 		e->keytex = 1;	
 	return (0);
+}
+
+void	ft_open_door(t_env *e)
+{
+	static int i = 0;
+
+	if (i < 20)
+	{
+		e->dd += 10;
+		i++;
+	}
+	else
+	{
+		i = 0;
+		e->key49 = 0;
+	}
+
 }
 
 int		loop_hook(t_env *e)
@@ -656,6 +675,8 @@ int		loop_hook(t_env *e)
 		e->xscreen = e->xscreen * cos(rotspeed) - e->yscreen * sin(rotspeed);
 		e->yscreen = tmp * sin(rotspeed) + e->yscreen * cos(rotspeed);
 	}
+	if (e->key49)
+		ft_open_door(e);
 	ft_creat_img(e);
 	return (0);
 }
@@ -716,7 +737,9 @@ void	ft_creat_env(t_env *e)
 	e->xscreen = 0;
 	e->yscreen = 0.66;
 	e->key13 = 0;
+	e->key49 = 0;
 	e->key1 = 0;
+	e->dd = 0;
 	e->key0 = 0;
 	e->key2 = 0;
 	e->keytex = 0;
