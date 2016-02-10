@@ -36,14 +36,17 @@ typedef struct	s_env
 	void		*win;
 	void		**img;
 	void		**img_wall;
+	void		**img_bras;
 	void		**img_sb;
 	void		**img_floor;
 	void		**img_obj;
 	char		**data;
 	char		**data_wall;
+	char		**data_bras;
 	char		**data_sb;
 	char		**data_floor;
 	char		**data_obj;
+	int			pause;
 	int			lmap;
 	int			hmap;
 	int			**map;
@@ -63,6 +66,7 @@ typedef struct	s_env
 	int			key2;
 	int			key49;
 	int			key123;
+	int			key35;
 	int			key124;
 	int			keytex;
 	t_obj		*tabobj;

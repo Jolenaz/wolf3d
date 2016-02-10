@@ -6,7 +6,7 @@
 /*   By: jbelless <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/01/27 10:44:56 by jbelless          #+#    #+#             */
-/*   Updated: 2016/02/09 16:37:46 by jbelless         ###   ########.fr       */
+/*   Updated: 2016/02/10 16:03:20 by jbelless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -479,6 +479,40 @@ void	ft_init_buff(t_env *e)
 
 }
 
+void	ft_move_pause(t_env *e)
+{
+	static int i = 1;
+
+	if (i < 7)
+	{
+		mlx_put_image_to_window(e->mlx, e->win, e->img[0], 0, 0);
+		mlx_put_image_to_window(e->mlx, e->win, e->img_bras[i], 250, 650);
+		i++;
+		if (i == 7)
+		{
+			i = 1;
+			e->pause = 1;
+		}	
+	}
+}
+
+void	ft_move_back_pause(t_env *e)
+{
+	static int j = 6;
+
+	if (j > 0)
+	{
+		mlx_put_image_to_window(e->mlx, e->win, e->img[0], 0, 0);
+		mlx_put_image_to_window(e->mlx, e->win, e->img_bras[j], 250, 650);
+		j--;
+		if (j == 0)
+		{
+			j = 6;
+			e->pause = 0;
+		}	
+	}
+}
+
 void	ft_creat_img(t_env *e)
 {
 	int bpp;
@@ -490,17 +524,6 @@ void	ft_creat_img(t_env *e)
 	endian = 0;
 	e->img[0] = mlx_new_image(e->mlx, SIZE_W, SIZE_W);
 	e->data[0] = mlx_get_data_addr(e->img[0], &bpp, &ls, &endian);
-	e->data_wall[1] = mlx_get_data_addr(e->img_wall[1], &bpp, &ls, &endian);
-	e->data_wall[2] = mlx_get_data_addr(e->img_wall[2], &bpp, &ls, &endian);
-	e->data_wall[3] = mlx_get_data_addr(e->img_wall[3], &bpp, &ls, &endian);
-	e->data_wall[4] = mlx_get_data_addr(e->img_wall[4], &bpp, &ls, &endian);
-	e->data_wall[5] = mlx_get_data_addr(e->img_wall[5], &bpp, &ls, &endian);
-	e->data_sb[2] = mlx_get_data_addr(e->img_sb[2], &bpp, &ls, &endian);
-	e->data_floor[1] = mlx_get_data_addr(e->img_floor[1], &bpp, &ls, &endian);
-	e->data_floor[2] = mlx_get_data_addr(e->img_floor[2], &bpp, &ls, &endian);
-	e->data_floor[3] = mlx_get_data_addr(e->img_floor[3], &bpp, &ls, &endian);
-	e->data_obj[1] = mlx_get_data_addr(e->img_obj[1], &bpp, &ls, &endian);
-	e->data_obj[2] = mlx_get_data_addr(e->img_obj[2], &bpp, &ls, &endian);
 	mlx_clear_window(e->mlx, e->win);
 	ft_init_ob_im(e);
 	ft_init_buff(e);
@@ -511,9 +534,12 @@ void	ft_creat_img(t_env *e)
 	ft_put_door(e);
 	ft_put_obj(e);
 	mlx_put_image_to_window(e->mlx, e->win, e->img[0], 0, 0);
+	if (e->key35)
+		ft_move_pause(e);
+	if (e->key35 == 0 && e->pause)
+		ft_move_back_pause(e);
 	mlx_destroy_image(e->mlx, e->img[0]);
 }
-
 
 int		key_down_hook(int kc, t_env *e)
 {
@@ -524,71 +550,79 @@ int		key_down_hook(int kc, t_env *e)
 	rotspeed = 10.0 / 180.0 * M_PI;
 	movespeed = 0.5;
 	mlx_do_key_autorepeatoff(e->mlx);
-	if (kc == 13 || kc == 126)
+	if (e->pause == 0)
 	{
-		if (e->map[(int)(e->xcam + e->xdir * 1.1 *movespeed)][(int)e->ycam] <= 0 &&
-				e->map2[(int)(e->xcam + e->xdir * 1.1 *movespeed)][(int)e->ycam] <= 0)
-			e->xcam += e->xdir * movespeed;
-		if (e->map[(int)e->xcam][(int)(e->ycam + e->ydir * 1.1 * movespeed)] <= 0 &&
-				e->map2[(int)e->xcam][(int)(e->ycam + e->ydir * 1.1 * movespeed)] <= 0)
-			e->ycam += e->ydir * movespeed;
-		e->key13 = 1;
+		if (kc == 13 || kc == 126)
+		{
+			if (e->map[(int)(e->xcam + e->xdir * 1.1 *movespeed)][(int)e->ycam] <= 0 &&
+					e->map2[(int)(e->xcam + e->xdir * 1.1 *movespeed)][(int)e->ycam] <= 0)
+				e->xcam += e->xdir * movespeed;
+			if (e->map[(int)e->xcam][(int)(e->ycam + e->ydir * 1.1 * movespeed)] <= 0 &&
+					e->map2[(int)e->xcam][(int)(e->ycam + e->ydir * 1.1 * movespeed)] <= 0)
+				e->ycam += e->ydir * movespeed;
+			e->key13 = 1;
+		}
+		if (kc == 1 || kc == 125)
+		{
+			e->key1 = 1;
+			if (e->map[(int)(e->xcam - e->xdir * 1.1 * movespeed)][(int)e->ycam] <= 0 &&
+					e->map2[(int)(e->xcam - e->xdir * 1.1 * movespeed)][(int)e->ycam] <= 0)
+				e->xcam -= e->xdir * movespeed;
+			if (e->map[(int)e->xcam][(int)(e->ycam - e->ydir * 1.1 * movespeed)] <= 0 &&
+					e->map2[(int)e->xcam][(int)(e->ycam - e->ydir * 1.1 * movespeed)] <= 0)
+				e->ycam -= e->ydir * movespeed;
+		}
+		if (kc == 0)
+		{
+			e->key0 = 1;
+			if (e->map[(int)(e->xcam - e->xscreen * 1.1 * movespeed)][(int)e->ycam] <= 0 &&
+					e->map2[(int)(e->xcam - e->xscreen * 1.1 * movespeed)][(int)e->ycam] <= 0)
+				e->xcam -= e->xscreen * movespeed;
+			if (e->map[(int)e->xcam][(int)(e->ycam - e->yscreen * 1.1 * movespeed)] <= 0 &&
+					e->map2[(int)e->xcam][(int)(e->ycam - e->yscreen * 1.1 * movespeed)] <= 0)
+				e->ycam -= e->yscreen * movespeed;
+		}
+		if (kc == 2)
+		{
+			e->key2 = 1;
+			if (e->map[(int)(e->xcam + e->xscreen * 1.1 * movespeed)][(int)e->ycam] <= 0 &&
+					e->map2[(int)(e->xcam + e->xscreen * 1.1 * movespeed)][(int)e->ycam] <= 0)
+				e->xcam += e->xscreen * movespeed;
+			if (e->map[(int)e->xcam][(int)(e->ycam + e->yscreen * 1.1 * movespeed)] <= 0 &&
+					e->map2[(int)e->xcam][(int)(e->ycam + e->yscreen * 1.1 * movespeed)] <= 0)
+				e->ycam += e->yscreen * movespeed;
+		}
+		if (kc == 123)
+		{
+			e->key123 = 1;
+			tmp = e->xdir;
+			e->xdir = e->xdir * cos(rotspeed) - e->ydir * sin(rotspeed);
+			e->ydir = tmp * sin(rotspeed) + e->ydir * cos(rotspeed);
+			tmp = e->xscreen;
+			e->xscreen = e->xscreen * cos(rotspeed) - e->yscreen * sin(rotspeed);
+			e->yscreen = tmp * sin(rotspeed) + e->yscreen * cos(rotspeed);
+		}
+		if (kc == 124)
+		{
+			e->key124 = 1;
+			tmp = e->xdir;
+			e->xdir = e->xdir * cos(-rotspeed) - e->ydir * sin(-rotspeed);
+			e->ydir = tmp * sin(-rotspeed) + e->ydir * cos(-rotspeed);
+			tmp = e->xscreen;
+			e->xscreen = e->xscreen * cos(-rotspeed) - e->yscreen * sin(-rotspeed);
+			e->yscreen = tmp * sin(-rotspeed) + e->yscreen * cos(-rotspeed);
+		}
+		if (kc == 53)
+			exit(0);
+		if (kc == 49)
+			e->key49 = 1;
 	}
-	if (kc == 1 || kc == 125)
-	{
-		e->key1 = 1;
-		if (e->map[(int)(e->xcam - e->xdir * 1.1 * movespeed)][(int)e->ycam] <= 0 &&
-				e->map2[(int)(e->xcam - e->xdir * 1.1 * movespeed)][(int)e->ycam] <= 0)
-			e->xcam -= e->xdir * movespeed;
-		if (e->map[(int)e->xcam][(int)(e->ycam - e->ydir * 1.1 * movespeed)] <= 0 &&
-				e->map2[(int)e->xcam][(int)(e->ycam - e->ydir * 1.1 * movespeed)] <= 0)
-			e->ycam -= e->ydir * movespeed;
-	}
-	if (kc == 0)
-	{
-		e->key0 = 1;
-		if (e->map[(int)(e->xcam - e->xscreen * 1.1 * movespeed)][(int)e->ycam] <= 0 &&
-				e->map2[(int)(e->xcam - e->xscreen * 1.1 * movespeed)][(int)e->ycam] <= 0)
-			e->xcam -= e->xscreen * movespeed;
-		if (e->map[(int)e->xcam][(int)(e->ycam - e->yscreen * 1.1 * movespeed)] <= 0 &&
-				e->map2[(int)e->xcam][(int)(e->ycam - e->yscreen * 1.1 * movespeed)] <= 0)
-			e->ycam -= e->yscreen * movespeed;
-	}
-	if (kc == 2)
-	{
-		e->key2 = 1;
-		if (e->map[(int)(e->xcam + e->xscreen * 1.1 * movespeed)][(int)e->ycam] <= 0 &&
-				e->map2[(int)(e->xcam + e->xscreen * 1.1 * movespeed)][(int)e->ycam] <= 0)
-			e->xcam += e->xscreen * movespeed;
-		if (e->map[(int)e->xcam][(int)(e->ycam + e->yscreen * 1.1 * movespeed)] <= 0 &&
-				e->map2[(int)e->xcam][(int)(e->ycam + e->yscreen * 1.1 * movespeed)] <= 0)
-			e->ycam += e->yscreen * movespeed;
-	}
-	if (kc == 123)
-	{
-		e->key123 = 1;
-		tmp = e->xdir;
-		e->xdir = e->xdir * cos(rotspeed) - e->ydir * sin(rotspeed);
-		e->ydir = tmp * sin(rotspeed) + e->ydir * cos(rotspeed);
-		tmp = e->xscreen;
-		e->xscreen = e->xscreen * cos(rotspeed) - e->yscreen * sin(rotspeed);
-		e->yscreen = tmp * sin(rotspeed) + e->yscreen * cos(rotspeed);
-	}
-	if (kc == 124)
-	{
-		e->key124 = 1;
-		tmp = e->xdir;
-		e->xdir = e->xdir * cos(-rotspeed) - e->ydir * sin(-rotspeed);
-		e->ydir = tmp * sin(-rotspeed) + e->ydir * cos(-rotspeed);
-		tmp = e->xscreen;
-		e->xscreen = e->xscreen * cos(-rotspeed) - e->yscreen * sin(-rotspeed);
-		e->yscreen = tmp * sin(-rotspeed) + e->yscreen * cos(-rotspeed);
-	}
-	if (kc == 53)
-		exit(0);
-	if (kc == 49)
-		e->key49 = 1;
-	ft_creat_img(e);
+	if (kc == 35 && e->pause == 0)
+		e->key35 = 1;
+	if (kc == 35 && e->pause == 1)
+		e->key35 = 0;
+	if (e->pause == 0)
+		ft_creat_img(e);
 	return (0);
 }
 
@@ -636,67 +670,70 @@ int		loop_hook(t_env *e)
 	double rotspeed;
 	double tmp;
 
-
-	printf("%lu\n",clock() / 1000);
 	rotspeed = 10.0 / 180.0 * M_PI;
 	movespeed = 0.5;
-	if (e->key13)
+	if (e->pause == 0)
 	{
-		if (e->map[(int)(e->xcam + e->xdir * 1.1 *movespeed)][(int)e->ycam] <= 0 && 
-				e->map2[(int)(e->xcam + e->xdir * 1.1 *movespeed)][(int)e->ycam] <= 0)
-			e->xcam += e->xdir * movespeed;
-		if (e->map[(int)e->xcam][(int)(e->ycam + e->ydir * 1.1 * movespeed)] <= 0 &&
-				e->map2[(int)e->xcam][(int)(e->ycam + e->ydir * 1.1 * movespeed)] <= 0)
-			e->ycam += e->ydir * movespeed;
+		if (e->key13)
+		{
+			if (e->map[(int)(e->xcam + e->xdir * 1.1 *movespeed)][(int)e->ycam] <= 0 && 
+					e->map2[(int)(e->xcam + e->xdir * 1.1 *movespeed)][(int)e->ycam] <= 0)
+				e->xcam += e->xdir * movespeed;
+			if (e->map[(int)e->xcam][(int)(e->ycam + e->ydir * 1.1 * movespeed)] <= 0 &&
+					e->map2[(int)e->xcam][(int)(e->ycam + e->ydir * 1.1 * movespeed)] <= 0)
+				e->ycam += e->ydir * movespeed;
+		}
+		if (e->key1)
+		{
+			if (e->map[(int)(e->xcam - e->xdir * 1.1 * movespeed)][(int)e->ycam] <= 0 &&
+					e->map2[(int)(e->xcam - e->xdir * 1.1 * movespeed)][(int)e->ycam] <= 0)
+				e->xcam -= e->xdir * movespeed;
+			if (e->map[(int)e->xcam][(int)(e->ycam - e->ydir * 1.1 * movespeed)] <= 0 &&
+					e->map2[(int)e->xcam][(int)(e->ycam - e->ydir * 1.1 * movespeed)] <= 0)
+				e->ycam -= e->ydir * movespeed;
+		}
+		if (e->key0)
+		{
+			if (e->map[(int)(e->xcam - e->xscreen * 1.1 * movespeed)][(int)e->ycam] <= 0 &&
+					e->map2[(int)(e->xcam - e->xscreen * 1.1 * movespeed)][(int)e->ycam] <= 0)
+				e->xcam -= e->xscreen * movespeed;
+			if (e->map[(int)e->xcam][(int)(e->ycam - e->yscreen * 1.1 * movespeed)] <= 0 &&
+					e->map2[(int)e->xcam][(int)(e->ycam - e->yscreen * 1.1 * movespeed)] <= 0)
+				e->ycam -= e->yscreen * movespeed;
+		}
+		if (e->key2)
+		{
+			if (e->map[(int)(e->xcam + e->xscreen * 1.1 * movespeed)][(int)e->ycam] <= 0 &&
+					e->map2[(int)(e->xcam + e->xscreen * 1.1 * movespeed)][(int)e->ycam] <= 0)
+				e->xcam += e->xscreen * movespeed;
+			if (e->map[(int)e->xcam][(int)(e->ycam + e->yscreen * 1.1 * movespeed)] <= 0 &&
+					e->map2[(int)e->xcam][(int)(e->ycam + e->yscreen * 1.1 * movespeed)] <= 0)
+				e->ycam += e->yscreen * movespeed;
+		}
+		if (e->key124)
+		{
+			tmp = e->xdir;
+			e->xdir = e->xdir * cos(-rotspeed) - e->ydir * sin(-rotspeed);
+			e->ydir = tmp * sin(-rotspeed) + e->ydir * cos(-rotspeed);
+			tmp = e->xscreen;
+			e->xscreen = e->xscreen * cos(-rotspeed) - e->yscreen * sin(-rotspeed);
+			e->yscreen = tmp * sin(-rotspeed) + e->yscreen * cos(-rotspeed);
+		}
+		if (e->key123)
+		{
+			tmp = e->xdir;
+			e->xdir = e->xdir * cos(rotspeed) - e->ydir * sin(rotspeed);
+			e->ydir = tmp * sin(rotspeed) + e->ydir * cos(rotspeed);
+			tmp = e->xscreen;
+			e->xscreen = e->xscreen * cos(rotspeed) - e->yscreen * sin(rotspeed);
+			e->yscreen = tmp * sin(rotspeed) + e->yscreen * cos(rotspeed);
+		}
+		if (e->key49)
+			ft_open_door(e);
+		ft_creat_img(e);
 	}
-	if (e->key1)
-	{
-		if (e->map[(int)(e->xcam - e->xdir * 1.1 * movespeed)][(int)e->ycam] <= 0 &&
-				e->map2[(int)(e->xcam - e->xdir * 1.1 * movespeed)][(int)e->ycam] <= 0)
-			e->xcam -= e->xdir * movespeed;
-		if (e->map[(int)e->xcam][(int)(e->ycam - e->ydir * 1.1 * movespeed)] <= 0 &&
-				e->map2[(int)e->xcam][(int)(e->ycam - e->ydir * 1.1 * movespeed)] <= 0)
-			e->ycam -= e->ydir * movespeed;
-	}
-	if (e->key0)
-	{
-		if (e->map[(int)(e->xcam - e->xscreen * 1.1 * movespeed)][(int)e->ycam] <= 0 &&
-				e->map2[(int)(e->xcam - e->xscreen * 1.1 * movespeed)][(int)e->ycam] <= 0)
-			e->xcam -= e->xscreen * movespeed;
-		if (e->map[(int)e->xcam][(int)(e->ycam - e->yscreen * 1.1 * movespeed)] <= 0 &&
-				e->map2[(int)e->xcam][(int)(e->ycam - e->yscreen * 1.1 * movespeed)] <= 0)
-			e->ycam -= e->yscreen * movespeed;
-	}
-	if (e->key2)
-	{
-		if (e->map[(int)(e->xcam + e->xscreen * 1.1 * movespeed)][(int)e->ycam] <= 0 &&
-				e->map2[(int)(e->xcam + e->xscreen * 1.1 * movespeed)][(int)e->ycam] <= 0)
-			e->xcam += e->xscreen * movespeed;
-		if (e->map[(int)e->xcam][(int)(e->ycam + e->yscreen * 1.1 * movespeed)] <= 0 &&
-				e->map2[(int)e->xcam][(int)(e->ycam + e->yscreen * 1.1 * movespeed)] <= 0)
-			e->ycam += e->yscreen * movespeed;
-	}
-	if (e->key124)
-	{
-		tmp = e->xdir;
-		e->xdir = e->xdir * cos(-rotspeed) - e->ydir * sin(-rotspeed);
-		e->ydir = tmp * sin(-rotspeed) + e->ydir * cos(-rotspeed);
-		tmp = e->xscreen;
-		e->xscreen = e->xscreen * cos(-rotspeed) - e->yscreen * sin(-rotspeed);
-		e->yscreen = tmp * sin(-rotspeed) + e->yscreen * cos(-rotspeed);
-	}
-	if (e->key123)
-	{
-		tmp = e->xdir;
-		e->xdir = e->xdir * cos(rotspeed) - e->ydir * sin(rotspeed);
-		e->ydir = tmp * sin(rotspeed) + e->ydir * cos(rotspeed);
-		tmp = e->xscreen;
-		e->xscreen = e->xscreen * cos(rotspeed) - e->yscreen * sin(rotspeed);
-		e->yscreen = tmp * sin(rotspeed) + e->yscreen * cos(rotspeed);
-	}
-	if (e->key49)
-		ft_open_door(e);
-	ft_creat_img(e);
+	else if (e->pause == 1 && e->key35 == 0)
+		ft_creat_img(e);
 	return (0);
 }
 
@@ -706,29 +743,40 @@ int		mouse_move_hook(int x, int y, t_env *e)
 	double rotspeed;
 	double tmp;
 
-	rotspeed = 0.3;
+	rotspeed = 0.1;
+//	printf("x = %d, y = %d\n", x, y);
 	y = 0;
-	if ((x0 - x) < 0)
+	if (e->pause == 0)
 	{
-		tmp = e->xdir;
-		e->xdir = e->xdir * cos(-rotspeed) - e->ydir * sin(-rotspeed);
-		e->ydir = tmp * sin(-rotspeed) + e->ydir * cos(-rotspeed);
-		tmp = e->xscreen;
-		e->xscreen = e->xscreen * cos(-rotspeed) - e->yscreen * sin(-rotspeed);
-		e->yscreen = tmp * sin(-rotspeed) + e->yscreen * cos(-rotspeed);
-		x0 = x;
+		if ((x0 - x) < 0)
+		{
+			tmp = e->xdir;
+			e->xdir = e->xdir * cos(-rotspeed) - e->ydir * sin(-rotspeed);
+			e->ydir = tmp * sin(-rotspeed) + e->ydir * cos(-rotspeed);
+			tmp = e->xscreen;
+			e->xscreen = e->xscreen * cos(-rotspeed) - e->yscreen * sin(-rotspeed);
+			e->yscreen = tmp * sin(-rotspeed) + e->yscreen * cos(-rotspeed);
+			x0 = x;
+		}
+		if ((x0 - x) > 0)
+		{
+			tmp = e->xdir;
+			e->xdir = e->xdir * cos(rotspeed) - e->ydir * sin(rotspeed);
+			e->ydir = tmp * sin(rotspeed) + e->ydir * cos(rotspeed);
+			tmp = e->xscreen;
+			e->xscreen = e->xscreen * cos(rotspeed) - e->yscreen * sin(rotspeed);
+			e->yscreen = tmp * sin(rotspeed) + e->yscreen * cos(rotspeed);
+			x0 = x;
+		}
+		ft_creat_img(e);
 	}
-	if ((x0 - x) > 0)
-	{
-		tmp = e->xdir;
-		e->xdir = e->xdir * cos(rotspeed) - e->ydir * sin(rotspeed);
-		e->ydir = tmp * sin(rotspeed) + e->ydir * cos(rotspeed);
-		tmp = e->xscreen;
-		e->xscreen = e->xscreen * cos(rotspeed) - e->yscreen * sin(rotspeed);
-		e->yscreen = tmp * sin(rotspeed) + e->yscreen * cos(rotspeed);
-		x0 = x;
-	}
-	ft_creat_img(e);
+	return (0);
+}
+
+int		mouse_hook(int b, int x, int y, t_env *e)
+{
+	if (b == 1 && x > 460 && x < 569 && y < 876 && y > 695 && e->pause == 1)
+		exit(0);
 	return (0);
 }
 
@@ -746,7 +794,14 @@ int expose_hook(t_env *e)
 
 void	ft_creat_env(t_env *e)
 {
+	int bpp;
+	int ls;
+	int endian;
 	int width = 256;
+
+	bpp = 4;
+	ls = 4 * SIZE_W;
+	endian = 0;
 	e->mlx = mlx_init();
 	e->win = mlx_new_window(e->mlx, SIZE_W, SIZE_W, "Wolf 3D");
 	e->xcam = 23;
@@ -757,17 +812,21 @@ void	ft_creat_env(t_env *e)
 	e->yscreen = 0.66;
 	e->key13 = 0;
 	e->key49 = 0;
+	e->key35 = 0;
 	e->key1 = 0;
 	e->dd = 0;
 	e->key0 = 0;
 	e->key2 = 0;
 	e->keytex = 0;
+	e->pause = 0;
 	e->img_wall = (void**)malloc(sizeof(void*) * 101);
+	e->img_bras = (void**)malloc(sizeof(void*) * 101);
 	e->img = (void**)malloc(sizeof(void*) * 101);
 	e->img_sb = (void**)malloc(sizeof(void*) * 101);
 	e->img_floor = (void**)malloc(sizeof(void*) * 101);
 	e->img_obj = (void**)malloc(sizeof(void*) * 101);
 	e->data_wall = (char**)malloc(sizeof(char*) * 101);
+	e->data_bras = (char**)malloc(sizeof(char*) * 101);
 	e->data = (char**)malloc(sizeof(char*) * 101);
 	e->data_sb = (char**)malloc(sizeof(char*) * 101);
 	e->data_floor = (char**)malloc(sizeof(char*) * 101);
@@ -783,10 +842,28 @@ void	ft_creat_env(t_env *e)
 	e->img_sb[2] = mlx_xpm_file_to_image(e->mlx, "images/sb2.xpm", &width, &width);
 	e->img_obj[1] = mlx_xpm_file_to_image(e->mlx, "images/obj1.xpm", &width, &width);
 	e->img_obj[2] = mlx_xpm_file_to_image(e->mlx, "images/obj2.xpm", &width, &width);
+	e->img_bras[1] = mlx_xpm_file_to_image(e->mlx, "images/bras_a_1.xpm", &width, &width);
+	e->img_bras[2] = mlx_xpm_file_to_image(e->mlx, "images/bras_a_2.xpm", &width, &width);
+	e->img_bras[3] = mlx_xpm_file_to_image(e->mlx, "images/bras_a_3.xpm", &width, &width);
+	e->img_bras[4] = mlx_xpm_file_to_image(e->mlx, "images/bras_a_4.xpm", &width, &width);
+	e->img_bras[5] = mlx_xpm_file_to_image(e->mlx, "images/bras_a_5.xpm", &width, &width);
+	e->img_bras[6] = mlx_xpm_file_to_image(e->mlx, "images/bras_a_6.xpm", &width, &width);
+	e->data_wall[1] = mlx_get_data_addr(e->img_wall[1], &bpp, &ls, &endian);
+	e->data_wall[2] = mlx_get_data_addr(e->img_wall[2], &bpp, &ls, &endian);
+	e->data_wall[3] = mlx_get_data_addr(e->img_wall[3], &bpp, &ls, &endian);
+	e->data_wall[4] = mlx_get_data_addr(e->img_wall[4], &bpp, &ls, &endian);
+	e->data_wall[5] = mlx_get_data_addr(e->img_wall[5], &bpp, &ls, &endian);
+	e->data_sb[2] = mlx_get_data_addr(e->img_sb[2], &bpp, &ls, &endian);
+	e->data_floor[1] = mlx_get_data_addr(e->img_floor[1], &bpp, &ls, &endian);
+	e->data_floor[2] = mlx_get_data_addr(e->img_floor[2], &bpp, &ls, &endian);
+	e->data_floor[3] = mlx_get_data_addr(e->img_floor[3], &bpp, &ls, &endian);
+	e->data_obj[1] = mlx_get_data_addr(e->img_obj[1], &bpp, &ls, &endian);
+	e->data_obj[2] = mlx_get_data_addr(e->img_obj[2], &bpp, &ls, &endian);
 	mlx_key_down_hook(e->win, key_down_hook, e);
 	mlx_key_up_hook(e->win, key_up_hook, e);
 	mlx_loop_hook(e->mlx, loop_hook, e);
 	mlx_mouse_move_hook(e->win, mouse_move_hook, e);
+	mlx_mouse_hook(e->win, mouse_hook, e);
 	mlx_expose_hook(e->win, expose_hook, e);
 	mlx_loop(e->mlx);
 }
