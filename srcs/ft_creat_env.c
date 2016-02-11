@@ -6,7 +6,7 @@
 /*   By: jbelless <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/01/27 10:44:56 by jbelless          #+#    #+#             */
-/*   Updated: 2016/02/11 17:40:30 by jbelless         ###   ########.fr       */
+/*   Updated: 2016/02/11 17:53:10 by jbelless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -530,15 +530,15 @@ void	ft_show_pic(t_env *e)
 {
 	static int j = 10;
 
-	if (j > 22)
+	if (j < 23)
 	{
 		mlx_put_image_to_window(e->mlx, e->win, e->img[0], 0, 0);
-		if (j < 15)
+		if (j <= 16)
 			mlx_put_image_to_window(e->mlx, e->win, e->img_bras[j], 250, 650);
 		else
-			mlx_put_image_to_window(e->mlx, e->win, e->img_bras[j - 6], 250, 650);
+			mlx_put_image_to_window(e->mlx, e->win, e->img_bras[32 - j], 250, 650);
 		j++;
-		if (j == 22)
+		if (j == 23)
 		{
 			j = 10;
 			e->show = 0;
@@ -813,6 +813,8 @@ int		mouse_move_hook(int x, int y, t_env *e)
 
 int		mouse_hook(int b, int x, int y, t_env *e)
 {
+	if (b == 1 && x && x < SIZE_W && y && y < SIZE_W && e->pause == 0)
+		e->show = 1;
 	if (b == 1 && x > 422 && x < 629 && y < 448 && y > 407 && e->pause == 1 && e->help == 0)
 		exit(0);
 	if (b == 1 && x > 419 && x < 629 && y < 327 && y > 283 && e->pause == 1 && e->help == 0)
@@ -911,12 +913,13 @@ void	ft_creat_env(t_env *e)
 	e->img_bras[13] = mlx_xpm_file_to_image(e->mlx, "images/bras_b_4.xpm", &width, &width);
 	e->img_bras[14] = mlx_xpm_file_to_image(e->mlx, "images/bras_b_5.xpm", &width, &width);
 	e->img_bras[15] = mlx_xpm_file_to_image(e->mlx, "images/bras_b_6.xpm", &width, &width);
-	e->img_bras[16] = mlx_xpm_file_to_image(e->mlx, "images/bras_c_1.xpm", &width, &width);
-	e->img_bras[17] = mlx_xpm_file_to_image(e->mlx, "images/bras_c_2.xpm", &width, &width);
-	e->img_bras[18] = mlx_xpm_file_to_image(e->mlx, "images/bras_c_3.xpm", &width, &width);
-	e->img_bras[19] = mlx_xpm_file_to_image(e->mlx, "images/bras_c_4.xpm", &width, &width);
-	e->img_bras[20] = mlx_xpm_file_to_image(e->mlx, "images/bras_c_5.xpm", &width, &width);
-	e->img_bras[21] = mlx_xpm_file_to_image(e->mlx, "images/bras_c_6.xpm", &width, &width);
+	e->img_bras[16] = mlx_xpm_file_to_image(e->mlx, "images/bras_b_6.xpm", &width, &width);
+	e->img_bras[17] = mlx_xpm_file_to_image(e->mlx, "images/bras_c_1.xpm", &width, &width);
+	e->img_bras[18] = mlx_xpm_file_to_image(e->mlx, "images/bras_c_2.xpm", &width, &width);
+	e->img_bras[19] = mlx_xpm_file_to_image(e->mlx, "images/bras_c_3.xpm", &width, &width);
+	e->img_bras[20] = mlx_xpm_file_to_image(e->mlx, "images/bras_c_4.xpm", &width, &width);
+	e->img_bras[21] = mlx_xpm_file_to_image(e->mlx, "images/bras_c_5.xpm", &width, &width);
+	e->img_bras[22] = mlx_xpm_file_to_image(e->mlx, "images/bras_c_6.xpm", &width, &width);
 	e->data_wall[1] = mlx_get_data_addr(e->img_wall[1], &bpp, &ls, &endian);
 	e->data_wall[2] = mlx_get_data_addr(e->img_wall[2], &bpp, &ls, &endian);
 	e->data_wall[3] = mlx_get_data_addr(e->img_wall[3], &bpp, &ls, &endian);
