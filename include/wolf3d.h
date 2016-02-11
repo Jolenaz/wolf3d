@@ -66,9 +66,12 @@ typedef struct	s_env
 	int			key2;
 	int			key49;
 	int			key123;
-	int			key35;
+	int			key53;
 	int			key124;
 	int			keytex;
+	int			help;
+	int			take;
+	int			show;
 	t_obj		*tabobj;
 	int			nbobj;
 	int			dd;

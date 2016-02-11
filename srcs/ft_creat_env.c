@@ -6,7 +6,7 @@
 /*   By: jbelless <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/01/27 10:44:56 by jbelless          #+#    #+#             */
-/*   Updated: 2016/02/10 16:03:20 by jbelless         ###   ########.fr       */
+/*   Updated: 2016/02/11 17:40:30 by jbelless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -483,12 +483,20 @@ void	ft_move_pause(t_env *e)
 {
 	static int i = 1;
 
-	if (i < 7)
+	if (i < 9)
 	{
+		if (i < 7)
+		{
 		mlx_put_image_to_window(e->mlx, e->win, e->img[0], 0, 0);
 		mlx_put_image_to_window(e->mlx, e->win, e->img_bras[i], 250, 650);
+		}
+		else if (i < 9)
+		{
+		mlx_put_image_to_window(e->mlx, e->win, e->img[0], 0, 0);
+		mlx_put_image_to_window(e->mlx, e->win, e->img_bras[i], 0, 0);
+		}
 		i++;
-		if (i == 7)
+		if (i == 9)
 		{
 			i = 1;
 			e->pause = 1;
@@ -509,6 +517,31 @@ void	ft_move_back_pause(t_env *e)
 		{
 			j = 6;
 			e->pause = 0;
+		}	
+	}
+}
+
+void	ft_take_pic(t_env *e)
+{
+e->take = 0;
+}
+
+void	ft_show_pic(t_env *e)
+{
+	static int j = 10;
+
+	if (j > 22)
+	{
+		mlx_put_image_to_window(e->mlx, e->win, e->img[0], 0, 0);
+		if (j < 15)
+			mlx_put_image_to_window(e->mlx, e->win, e->img_bras[j], 250, 650);
+		else
+			mlx_put_image_to_window(e->mlx, e->win, e->img_bras[j - 6], 250, 650);
+		j++;
+		if (j == 22)
+		{
+			j = 10;
+			e->show = 0;
 		}	
 	}
 }
@@ -534,10 +567,17 @@ void	ft_creat_img(t_env *e)
 	ft_put_door(e);
 	ft_put_obj(e);
 	mlx_put_image_to_window(e->mlx, e->win, e->img[0], 0, 0);
-	if (e->key35)
+	if (e->key53)
 		ft_move_pause(e);
-	if (e->key35 == 0 && e->pause)
+	else if (e->key53 == 0 && e->pause)
 		ft_move_back_pause(e);
+	else if (e->take == 1)
+		ft_take_pic(e);
+	else if (e->show == 1)
+		ft_show_pic(e);
+	else
+		mlx_put_image_to_window(e->mlx, e->win, e->img_bras[0], 250, 650);
+
 	mlx_destroy_image(e->mlx, e->img[0]);
 }
 
@@ -612,15 +652,13 @@ int		key_down_hook(int kc, t_env *e)
 			e->xscreen = e->xscreen * cos(-rotspeed) - e->yscreen * sin(-rotspeed);
 			e->yscreen = tmp * sin(-rotspeed) + e->yscreen * cos(-rotspeed);
 		}
-		if (kc == 53)
-			exit(0);
 		if (kc == 49)
 			e->key49 = 1;
 	}
-	if (kc == 35 && e->pause == 0)
-		e->key35 = 1;
-	if (kc == 35 && e->pause == 1)
-		e->key35 = 0;
+	if (kc == 53 && e->pause == 0)
+		e->key53 = 1;
+	if (kc == 53 && e->pause == 1)
+		e->key53 = 0;
 	if (e->pause == 0)
 		ft_creat_img(e);
 	return (0);
@@ -732,7 +770,7 @@ int		loop_hook(t_env *e)
 			ft_open_door(e);
 		ft_creat_img(e);
 	}
-	else if (e->pause == 1 && e->key35 == 0)
+	else if (e->pause == 1 && e->key53 == 0)
 		ft_creat_img(e);
 	return (0);
 }
@@ -775,8 +813,20 @@ int		mouse_move_hook(int x, int y, t_env *e)
 
 int		mouse_hook(int b, int x, int y, t_env *e)
 {
-	if (b == 1 && x > 460 && x < 569 && y < 876 && y > 695 && e->pause == 1)
+	if (b == 1 && x > 422 && x < 629 && y < 448 && y > 407 && e->pause == 1 && e->help == 0)
 		exit(0);
+	if (b == 1 && x > 419 && x < 629 && y < 327 && y > 283 && e->pause == 1 && e->help == 0)
+	{
+		mlx_put_image_to_window(e->mlx, e->win, e->img_bras[9], 0, 0);
+		e->help = 1;
+	}
+	if (b == 1 && x > 419 && x < 626 && y < 205 && y > 161 && e->pause == 1 && e->help == 0)
+		e->key53 = 0;
+	if (b == 1 && x > 429 && x < 466 && y < 529 && y > 494 && e->pause == 1 && e->help == 1)
+	{
+		mlx_put_image_to_window(e->mlx, e->win, e->img_bras[8], 0, 0);
+		e->help = 0;
+	}
 	return (0);
 }
 
@@ -812,9 +862,12 @@ void	ft_creat_env(t_env *e)
 	e->yscreen = 0.66;
 	e->key13 = 0;
 	e->key49 = 0;
-	e->key35 = 0;
+	e->key53 = 0;
 	e->key1 = 0;
 	e->dd = 0;
+	e->help = 0;
+	e->take = 0;
+	e->show = 0;
 	e->key0 = 0;
 	e->key2 = 0;
 	e->keytex = 0;
@@ -842,12 +895,28 @@ void	ft_creat_env(t_env *e)
 	e->img_sb[2] = mlx_xpm_file_to_image(e->mlx, "images/sb2.xpm", &width, &width);
 	e->img_obj[1] = mlx_xpm_file_to_image(e->mlx, "images/obj1.xpm", &width, &width);
 	e->img_obj[2] = mlx_xpm_file_to_image(e->mlx, "images/obj2.xpm", &width, &width);
+	e->img_bras[0] = mlx_xpm_file_to_image(e->mlx, "images/bras.xpm", &width, &width);
 	e->img_bras[1] = mlx_xpm_file_to_image(e->mlx, "images/bras_a_1.xpm", &width, &width);
 	e->img_bras[2] = mlx_xpm_file_to_image(e->mlx, "images/bras_a_2.xpm", &width, &width);
 	e->img_bras[3] = mlx_xpm_file_to_image(e->mlx, "images/bras_a_3.xpm", &width, &width);
 	e->img_bras[4] = mlx_xpm_file_to_image(e->mlx, "images/bras_a_4.xpm", &width, &width);
 	e->img_bras[5] = mlx_xpm_file_to_image(e->mlx, "images/bras_a_5.xpm", &width, &width);
 	e->img_bras[6] = mlx_xpm_file_to_image(e->mlx, "images/bras_a_6.xpm", &width, &width);
+	e->img_bras[7] = mlx_xpm_file_to_image(e->mlx, "images/menu_vide.xpm", &width, &width);
+	e->img_bras[8] = mlx_xpm_file_to_image(e->mlx, "images/menu_menu.xpm", &width, &width);
+	e->img_bras[9] = mlx_xpm_file_to_image(e->mlx, "images/menu_help.xpm", &width, &width);
+	e->img_bras[10] = mlx_xpm_file_to_image(e->mlx, "images/bras_b_1.xpm", &width, &width);
+	e->img_bras[11] = mlx_xpm_file_to_image(e->mlx, "images/bras_b_2.xpm", &width, &width);
+	e->img_bras[12] = mlx_xpm_file_to_image(e->mlx, "images/bras_b_3.xpm", &width, &width);
+	e->img_bras[13] = mlx_xpm_file_to_image(e->mlx, "images/bras_b_4.xpm", &width, &width);
+	e->img_bras[14] = mlx_xpm_file_to_image(e->mlx, "images/bras_b_5.xpm", &width, &width);
+	e->img_bras[15] = mlx_xpm_file_to_image(e->mlx, "images/bras_b_6.xpm", &width, &width);
+	e->img_bras[16] = mlx_xpm_file_to_image(e->mlx, "images/bras_c_1.xpm", &width, &width);
+	e->img_bras[17] = mlx_xpm_file_to_image(e->mlx, "images/bras_c_2.xpm", &width, &width);
+	e->img_bras[18] = mlx_xpm_file_to_image(e->mlx, "images/bras_c_3.xpm", &width, &width);
+	e->img_bras[19] = mlx_xpm_file_to_image(e->mlx, "images/bras_c_4.xpm", &width, &width);
+	e->img_bras[20] = mlx_xpm_file_to_image(e->mlx, "images/bras_c_5.xpm", &width, &width);
+	e->img_bras[21] = mlx_xpm_file_to_image(e->mlx, "images/bras_c_6.xpm", &width, &width);
 	e->data_wall[1] = mlx_get_data_addr(e->img_wall[1], &bpp, &ls, &endian);
 	e->data_wall[2] = mlx_get_data_addr(e->img_wall[2], &bpp, &ls, &endian);
 	e->data_wall[3] = mlx_get_data_addr(e->img_wall[3], &bpp, &ls, &endian);
