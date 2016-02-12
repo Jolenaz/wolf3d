@@ -6,7 +6,7 @@
 /*   By: jbelless <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/01/27 10:44:56 by jbelless          #+#    #+#             */
-/*   Updated: 2016/02/12 09:27:11 by jbelless         ###   ########.fr       */
+/*   Updated: 2016/02/12 14:59:59 by jbelless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,8 +92,10 @@ void	ft_cop_wall(int texx, int texy, int x, int y, int wall, t_env *e, int side)
 		c = (unsigned char*)e->data_wall[2] + texx * 4 + texy * 4 * SIZE_T;
 	else if (wall == 3 || (wall == 23 && side == 0))
 		c = (unsigned char*)e->data_wall[3] + texx * 4 + texy * 4 * SIZE_T;
-	else
+	else if (wall == 4)
 		c = (unsigned char*)e->data_wall[4] + texx * 4 + texy * 4 * SIZE_T;
+	else
+		c = (unsigned char*)e->data_wall[6] + texx * 4 + texy * 4 * SIZE_T;
 	*((unsigned char*)ptrc) = *c;
 	*((unsigned char*)ptrc + 1) = *(c + 1);
 	*((unsigned char*)ptrc + 2) = *(c + 2);
@@ -151,35 +153,45 @@ void	ft_cop_obj(int texx, int texy, int x, int y, int obj, t_env *e)
 void	ft_put_text_line(int x, int texx, int drawstart, int drawend, int wall, t_env *e, int side, int lineheight, double distwall, double floorxwall, double floorywall)
 {
 	int y;
+	int d;
 	double currentdist;
 
 	y = drawend;
-	while (y < SIZE_W)
+	if (wall != 6)
 	{
-		currentdist =  (double)SIZE_W / (2.0 * (double)y - (double)SIZE_W);
-		double weight;
-		weight = currentdist / distwall;
-		double currentfloorx;
-		double currentfloory;
-		int floortexx;
-		int floortexy;
-		currentfloorx = weight * floorxwall + (1.0 - weight) * (double)e->xcam;
-		currentfloory = weight * floorywall + (1.0 - weight) * (double)e->ycam;
-		floortexx = (int)(currentfloorx * (double)SIZE_T) % SIZE_T;
-		floortexy = (int)(currentfloory * (double)SIZE_T) % SIZE_T;
-		if (e->map[(int)currentfloorx][(int)currentfloory] != -1)
+		while (y < SIZE_W)
 		{
-			ft_cop_floor(floortexx, floortexy, x, SIZE_W - y, 5, e);
-			ft_cop_floor(floortexx, floortexy, x, y, 6, e);
+			currentdist =  (double)SIZE_W / (2.0 * (double)y - (double)SIZE_W);
+			double weight;
+			weight = currentdist / distwall;
+			double currentfloorx;
+			double currentfloory;
+			int floortexx;
+			int floortexy;
+			currentfloorx = weight * floorxwall + (1.0 - weight) * (double)e->xcam;
+			currentfloory = weight * floorywall + (1.0 - weight) * (double)e->ycam;
+			floortexx = (int)(currentfloorx * (double)SIZE_T) % SIZE_T;
+			floortexy = (int)(currentfloory * (double)SIZE_T) % SIZE_T;
+			if(drawend != SIZE_W - 1) 
+			{
+			if (e->map[(int)currentfloorx][(int)currentfloory] != -1)
+			{
+				ft_cop_floor(floortexx, floortexy, x, SIZE_W - y, 5, e);
+				ft_cop_floor(floortexx, floortexy, x, y, 6, e);
+			}
+			else 
+				ft_cop_floor(floortexx, floortexy, x, y, 7, e);
+			}
+			y++;
 		}
-		else 
-			ft_cop_floor(floortexx, floortexy, x, y, 7, e);
-		y++;
 	}
 	y = drawstart;
 	while (y < drawend)
 	{
-		int d = y * 256 - SIZE_W * 128 + lineheight * 128;
+		if (wall != 6)
+			d = y * 256 - SIZE_W * 128 + lineheight * 128;
+		else
+			d = (y - drawstart) * 256;
 		int texy = ((d * SIZE_T) / lineheight) / 256;
 		ft_cop_wall(texx, texy, x, y, wall, e, side);
 		y++;
@@ -206,7 +218,7 @@ void	ft_putline(int x, int drawstart, int drawend, int wall, t_env *e, int side)
 	}
 }
 
-void	ft_put_door_line(int x, int texx, int drawstart, int drawend, int obj, t_env *e, int lineheight)
+void	ft_put_door_line(int x, int texx, int drawstart, int drawend, int door, t_env *e, int lineheight)
 {
 	int y;
 
@@ -215,7 +227,7 @@ void	ft_put_door_line(int x, int texx, int drawstart, int drawend, int obj, t_en
 	{
 		int d = y * 256 - SIZE_W * 128 + lineheight * 128;
 		int texy = ((d * SIZE_T) / lineheight) / 256;
-		ft_cop_door(texx, texy, x, y, obj, e);
+		ft_cop_door(texx, texy, x, y, door, e);
 		y++;
 	}
 }
@@ -255,6 +267,8 @@ void	ft_put_door(t_env *e)
 				texx = SIZE_T - texx - 1;
 			if (e->keytex == 1)
 				ft_put_door_line(x, texx, drawstart, drawend, e->map[e->zdoor[x].mapx][e->zdoor[x].mapy], e, lineheight);
+			if (e->map[e->zdoor[x].mapx][e->zdoor[x].mapy] == -50 && e->xdir < 0.5)
+				ft_put_text_line(x, texx, 2 * drawstart - drawend, drawstart, 6, e, 0, lineheight, 0, 0, 0);
 		}
 		x++;
 	}
@@ -382,6 +396,8 @@ void	ft_modim(t_env *e)
 			ft_putline(x, drawstart, drawend, e->map[mapx][mapy], e, side);
 		else
 			ft_put_text_line(x, texx, drawstart, drawend, e->map[mapx][mapy], e, side, lineheight, perpwalldist, floorxwall, floorywall);
+		if (e->map[mapx][mapy] == 1 || (side == 0 && (e->map[mapx][mapy] == 21 || e->map[mapx][mapy] == 12)))
+			ft_put_text_line(x, texx, 2 * drawstart - drawend, drawstart, 6, e, side, lineheight, perpwalldist, floorxwall, floorywall);
 		x++;
 	}
 }
@@ -487,13 +503,13 @@ void	ft_move_pause(t_env *e)
 	{
 		if (i < 7)
 		{
-		mlx_put_image_to_window(e->mlx, e->win, e->img[0], 0, 0);
-		mlx_put_image_to_window(e->mlx, e->win, e->img_bras[i], 250, 650);
+			mlx_put_image_to_window(e->mlx, e->win, e->img[0], 0, 0);
+			mlx_put_image_to_window(e->mlx, e->win, e->img_bras[i], 250, 650);
 		}
 		else if (i < 9)
 		{
-		mlx_put_image_to_window(e->mlx, e->win, e->img[0], 0, 0);
-		mlx_put_image_to_window(e->mlx, e->win, e->img_bras[i], 0, 0);
+			mlx_put_image_to_window(e->mlx, e->win, e->img[0], 0, 0);
+			mlx_put_image_to_window(e->mlx, e->win, e->img_bras[i], 0, 0);
 		}
 		i++;
 		if (i == 9)
@@ -525,17 +541,17 @@ void	ft_take_pic(t_env *e)
 {
 	static int j = 17;
 
-	if (j < 31)
+	if (j < 30)
 	{
 		mlx_put_image_to_window(e->mlx, e->win, e->img[0], 0, 0);
 		if (j <= 22)
 			mlx_put_image_to_window(e->mlx, e->win, e->img_bras[j], 250, 650);
-		else if (j == 23 || j == 24)
+		else if (j == 23)
 			mlx_put_image_to_window(e->mlx, e->win, e->img_bras[23], 0, 0);
 		else
-			mlx_put_image_to_window(e->mlx, e->win, e->img_bras[47 - j], 250, 650);
+			mlx_put_image_to_window(e->mlx, e->win, e->img_bras[46 - j], 250, 650);
 		j++;
-		if (j == 31)
+		if (j == 30)
 		{
 			j = 17;
 			e->take = 0;
@@ -669,8 +685,8 @@ int		key_down_hook(int kc, t_env *e)
 			e->xscreen = e->xscreen * cos(-rotspeed) - e->yscreen * sin(-rotspeed);
 			e->yscreen = tmp * sin(-rotspeed) + e->yscreen * cos(-rotspeed);
 		}
-		if (kc == 49)
-			e->key49 = 1;
+	//	if (kc == 49)
+	//		e->key49 = 1;
 	}
 	if (kc == 53 && e->pause == 0)
 		e->key53 = 1;
@@ -721,6 +737,7 @@ void	ft_open_door(t_env *e)
 
 int		loop_hook(t_env *e)
 {
+//	printf("xdir cam = %f, ydir cam = %f\n",e->xdir, e->ydir);
 	double movespeed;
 	double rotspeed;
 	double tmp;
@@ -799,7 +816,7 @@ int		mouse_move_hook(int x, int y, t_env *e)
 	double tmp;
 
 	rotspeed = 0.1;
-//	printf("x = %d, y = %d\n", x, y);
+	//	printf("x = %d, y = %d\n", x, y);
 	y = 0;
 	if (e->pause == 0)
 	{
@@ -891,7 +908,7 @@ void	ft_creat_env(t_env *e)
 	e->show = 0;
 	e->key0 = 0;
 	e->key2 = 0;
-	e->keytex = 0;
+	e->keytex = 1;
 	e->pause = 0;
 	e->img_wall = (void**)malloc(sizeof(void*) * 101);
 	e->img_bras = (void**)malloc(sizeof(void*) * 101);
@@ -910,6 +927,7 @@ void	ft_creat_env(t_env *e)
 	e->img_wall[3] = mlx_xpm_file_to_image(e->mlx, "images/wall3.xpm", &width, &width);
 	e->img_wall[4] = mlx_xpm_file_to_image(e->mlx, "images/wall4.xpm", &width, &width);
 	e->img_wall[5] = mlx_xpm_file_to_image(e->mlx, "images/wall5.xpm", &width, &width);
+	e->img_wall[6] = mlx_xpm_file_to_image(e->mlx, "images/wall6.xpm", &width, &width);
 	e->img_floor[1] = mlx_xpm_file_to_image(e->mlx, "images/floor1.xpm", &width, &width);
 	e->img_floor[2] = mlx_xpm_file_to_image(e->mlx, "images/floor2.xpm", &width, &width);
 	e->img_floor[3] = mlx_xpm_file_to_image(e->mlx, "images/floor3.xpm", &width, &width);
@@ -945,6 +963,7 @@ void	ft_creat_env(t_env *e)
 	e->data_wall[3] = mlx_get_data_addr(e->img_wall[3], &bpp, &ls, &endian);
 	e->data_wall[4] = mlx_get_data_addr(e->img_wall[4], &bpp, &ls, &endian);
 	e->data_wall[5] = mlx_get_data_addr(e->img_wall[5], &bpp, &ls, &endian);
+	e->data_wall[6] = mlx_get_data_addr(e->img_wall[6], &bpp, &ls, &endian);
 	e->data_sb[2] = mlx_get_data_addr(e->img_sb[2], &bpp, &ls, &endian);
 	e->data_floor[1] = mlx_get_data_addr(e->img_floor[1], &bpp, &ls, &endian);
 	e->data_floor[2] = mlx_get_data_addr(e->img_floor[2], &bpp, &ls, &endian);
