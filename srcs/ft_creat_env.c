@@ -6,7 +6,7 @@
 /*   By: jbelless <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/01/27 10:44:56 by jbelless          #+#    #+#             */
-/*   Updated: 2016/02/12 14:59:59 by jbelless         ###   ########.fr       */
+/*   Updated: 2016/02/12 17:00:14 by jbelless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -174,7 +174,8 @@ void	ft_put_text_line(int x, int texx, int drawstart, int drawend, int wall, t_e
 			floortexy = (int)(currentfloory * (double)SIZE_T) % SIZE_T;
 			if(drawend != SIZE_W - 1) 
 			{
-			if (e->map[(int)currentfloorx][(int)currentfloory] != -1)
+			if (e->map[(int)currentfloorx][(int)currentfloory] != -1 &&
+					e->map[(int)currentfloorx][(int)currentfloory] != -51 )
 			{
 				ft_cop_floor(floortexx, floortexy, x, SIZE_W - y, 5, e);
 				ft_cop_floor(floortexx, floortexy, x, y, 6, e);
@@ -266,7 +267,12 @@ void	ft_put_door(t_env *e)
 			if (e->zdoor[x].side == 1 && e->zdoor[x].raydiry < 0)
 				texx = SIZE_T - texx - 1;
 			if (e->keytex == 1)
-				ft_put_door_line(x, texx, drawstart, drawend, e->map[e->zdoor[x].mapx][e->zdoor[x].mapy], e, lineheight);
+			{
+				if (e->map[(int)e->xcam][(int)e->ycam] == -1 && e->map[e->zdoor[x].mapx][e->zdoor[x].mapy] != -51)
+					ft_put_door_line(x, texx, drawstart, drawend, e->map[e->zdoor[x].mapx][e->zdoor[x].mapy], e, lineheight);
+				else if (e->map[(int)e->xcam][(int)e->ycam] == 0 && e->map[e->zdoor[x].mapx][e->zdoor[x].mapy] != -50)
+					ft_put_door_line(x, texx, drawstart, drawend, e->map[e->zdoor[x].mapx][e->zdoor[x].mapy], e, lineheight);
+			}
 			if (e->map[e->zdoor[x].mapx][e->zdoor[x].mapy] == -50 && e->xdir < 0.5)
 				ft_put_text_line(x, texx, 2 * drawstart - drawend, drawstart, 6, e, 0, lineheight, 0, 0, 0);
 		}
