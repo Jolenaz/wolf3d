@@ -36,12 +36,14 @@ typedef struct	s_env
 	void		*win;
 	void		**img;
 	void		**img_wall;
+	void		**img_door;
 	void		**img_bras;
 	void		**img_sb;
 	void		**img_floor;
 	void		**img_obj;
 	char		**data;
 	char		**data_wall;
+	char		**data_door;
 	char		**data_bras;
 	char		**data_sb;
 	char		**data_floor;
@@ -80,6 +82,7 @@ typedef struct	s_env
 
 void			ft_print_map(t_env *e);
 void			ft_print_map2(t_env *e);
+void			ft_print_map3(t_env *e);
 void			ft_print_tabobj(t_env *e);
 void			ft_creat_env(t_env *e);
 void			ft_creat_obj_env(t_env *e);

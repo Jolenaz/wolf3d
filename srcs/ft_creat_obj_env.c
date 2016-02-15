@@ -6,7 +6,7 @@
 /*   By: jbelless <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/02/06 20:42:50 by jbelless          #+#    #+#             */
-/*   Updated: 2016/02/15 09:14:07 by jbelless         ###   ########.fr       */
+/*   Updated: 2016/02/15 12:25:43 by jbelless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	ft_init_tabobj(t_env *e)
 		j = 0;
 		while (j < e->hmap)
 		{
-			if (e->map2[i][j] != 0)
+			if (e->map3[i][j] != 0)
 			{
 				e->tabobj[l].x = i;
 				e->tabobj[l].y = j;

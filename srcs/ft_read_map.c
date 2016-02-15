@@ -6,7 +6,7 @@
 /*   By: jbelless <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/02/15 09:04:46 by jbelless          #+#    #+#             */
-/*   Updated: 2016/02/15 09:30:59 by jbelless         ###   ########.fr       */
+/*   Updated: 2016/02/15 12:21:05 by jbelless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,6 +94,7 @@ void	ft_read_map(int fd, t_env *e)
 	close(fd);
 //	ft_print_map(e);
 //	ft_print_map2(e);
+//	ft_print_map3(e);
 	ft_creat_obj_env(e);
 	ft_creat_env(e);
 
