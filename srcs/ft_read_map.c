@@ -1,23 +1,17 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_read_map.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jbelless <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2016/02/15 09:04:46 by jbelless          #+#    #+#             */
+/*   Updated: 2016/02/15 09:30:59 by jbelless         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "wolf3d.h"
 #include <stdio.h>
-
-static int ft_nb_block_line(char *line)
-{
-	int i;
-	char *c;
-
-	c = line;
-	i = 0;
-	if (*c >= '0' && *c <= '9')
-		i++;
-	while (*c)
-	{
-		if (((*c >= '0' && *c <= '9') || *c == '-') && *(c - 1) == ' ')
-			i++;
-		c++;
-	}
-	return (i);
-}
 
 static int *ft_stockmap(char *line, t_env *e)
 {
@@ -28,7 +22,7 @@ static int *ft_stockmap(char *line, t_env *e)
 	l = NULL;
 	i = 0;
 	c = line;
-	if ((l = (int*)malloc(sizeof(int) * ft_nb_block_line(line))) == NULL)
+	if ((l = (int*)malloc(sizeof(int) * e->hmap)) == NULL)
 		exit(0);
 	if ((*c >= '0' && *c <= '9') || *c == '-')
 	{
@@ -45,7 +39,6 @@ static int *ft_stockmap(char *line, t_env *e)
 		}
 		c++;
 	}
-	e->hmap = i;
 	return (l);
 }
 
@@ -59,10 +52,21 @@ void	ft_read_map(int fd, t_env *e)
 	j = 0;
 	e->map = NULL;
 	e->map2 = NULL;
-	if ((e->map = (int**)malloc(100 * sizeof(int*))) == NULL)
-		exit (0);
-	if ((e->map2 = (int**)malloc(100 * sizeof(int*))) == NULL)
-		exit (0);
+	e->map3 = NULL;
+	if ((ret = get_next_line(fd, &line)) == -1)
+		exit(0);
+	e->lmap = ft_atoi(line);
+	if ((ret = get_next_line(fd, &line)) == -1)
+		exit(0);
+	e->hmap = ft_atoi(line);
+	if ((ret = get_next_line(fd, &line)) == -1)
+		exit(0);
+	if ((e->map = (int**)malloc(sizeof(int*) * e->lmap)) == NULL)
+		exit(0);
+	if ((e->map2 = (int**)malloc(sizeof(int*) * e->lmap)) == NULL)
+		exit(0);
+	if ((e->map3 = (int**)malloc(sizeof(int*) * e->lmap)) == NULL)
+		exit(0);
 	while ((ret = get_next_line(fd, &line)) > 0 && ft_strlen(line) != 0)
 	{
 		if (ret == -1)
@@ -70,13 +74,20 @@ void	ft_read_map(int fd, t_env *e)
 		e->map[j] = ft_stockmap(line, e);
 		j++;
 	}
-	e->lmap = j;
 	j = 0;
-	while ((ret = get_next_line(fd, &line)) > 0)
+	while ((ret = get_next_line(fd, &line)) > 0 && ft_strlen(line) != 0)
 	{
 		if (ret == -1)
 			exit(0);
 		e->map2[j] = ft_stockmap(line, e);
+		j++;
+	}	
+	j = 0;
+	while ((ret = get_next_line(fd, &line)) > 0 && ft_strlen(line) != 0)
+	{
+		if (ret == -1)
+			exit(0);
+		e->map3[j] = ft_stockmap(line, e);
 		j++;
 	}
 	free(line);

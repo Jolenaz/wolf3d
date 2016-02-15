@@ -6,7 +6,7 @@
 /*   By: jbelless <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/02/06 20:42:50 by jbelless          #+#    #+#             */
-/*   Updated: 2016/02/08 12:35:34 by jbelless         ###   ########.fr       */
+/*   Updated: 2016/02/15 09:14:07 by jbelless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ void	ft_init_tabobj(t_env *e)
 				e->tabobj[l].x = i;
 				e->tabobj[l].y = j;
 				e->tabobj[l].dist = -1;
-				e->tabobj[l].type = e->map2[i][j];
+				e->tabobj[l].type = abs(e->map3[i][j]);
 				l++;
 			}
 			j++;
@@ -52,7 +52,7 @@ int		ft_nb_obj(t_env *e)
 		j = 0;
 		while (j < e->hmap)
 		{
-			if (e->map2[i][j] != 0)
+			if (e->map3[i][j] != 0)
 				l++;
 			j++;
 		}

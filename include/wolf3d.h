@@ -51,6 +51,7 @@ typedef struct	s_env
 	int			hmap;
 	int			**map;
 	int			**map2;
+	int			**map3;
 	double		zbuff[SIZE_W];
 	double		zisdoor[SIZE_W];
 	t_zdoor		zdoor[SIZE_W];
