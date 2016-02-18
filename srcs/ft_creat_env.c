@@ -177,15 +177,22 @@ void	ft_put_text_line(int x, int texx, int drawstart, int drawend, int wall, t_e
 			currentfloory = weight * floorywall + (1.0 - weight) * (double)e->ycam;
 			floortexx = (int)(currentfloorx * (double)SIZE_T) % SIZE_T;
 			floortexy = (int)(currentfloory * (double)SIZE_T) % SIZE_T;
-			if(drawend != SIZE_W - 1) 
+			if(drawend != SIZE_W - 1 && (int)currentfloorx < 32 && (int)currentfloory < 32) 
 			{
-				if (e->map2[(int)currentfloorx][(int)currentfloory] > 0)
+				if (e->map2[(int)currentfloorx][(int)currentfloory] > 0 && e->map2[(int)currentfloorx][(int)currentfloory] < 9 )
 				{
 					ft_cop_floor(floortexx, floortexy, x, SIZE_W - y, e->map2[(int)currentfloorx][(int)currentfloory] + 1, e);
 					ft_cop_floor(floortexx, floortexy, x, y, e->map2[(int)currentfloorx][(int)currentfloory], e);
 				}
-				else 
+				else if (e->map2[(int)currentfloorx][(int)currentfloory] == 0)
 					ft_cop_floor(floortexx, floortexy, x, y, 0, e);
+				else if (e->map2[(int)currentfloorx][(int)currentfloory] >= 0 )
+				{
+					ft_cop_floor(floortexx, floortexy, x, SIZE_W - y, 6, e);
+					ft_cop_floor(floortexx, floortexy, x, y, e->map2[(int)currentfloorx][(int)currentfloory], e);
+
+				}
+
 			}
 			y++;
 		}
@@ -608,7 +615,7 @@ void	ft_creat_img(t_env *e)
 	ft_sort_obj(e);
 	ft_put_skybox(e);
 	ft_modim(e);
-	ft_put_obj(e);
+//	ft_put_obj(e);
 	ft_put_door(e);
 	ft_put_obj(e);
 	mlx_put_image_to_window(e->mlx, e->win, e->img[0], 0, 0);
@@ -751,10 +758,15 @@ void	ft_open_door(t_env *e)
 			e->map[15][8] = 0;
 			e->map3[15][9] = -3;
 		}
-		if (e->qr == 4)
+		else if (e->qr == 4)
 		{
-			e->map[8][12] = 0;
-			e->map3[7][12] = -4;
+			e->map[7][15] = 0;
+			e->map3[7][14] = -4;
+		}
+		else if (e->qr == 5)
+		{
+			e->map[1][13] = 0;
+			e->map3[1][12] = -5;
 		}
 	}
 
@@ -880,6 +892,8 @@ int		mouse_hook(int b, int x, int y, t_env *e)
 			e->key49 = 1;
 		if ((int)e->xcam == 7 && ((int)e->ycam == 12 || (int)e->ycam == 13) && e->xdir > -0.7 && e->xdir < 0.2 && e->ydir > 0.7 && e->ydir < 1 && e->qr == 4)
 			e->key49 = 1;
+		if ((int)e->xcam == 1 && ((int)e->ycam == 10 || (int)e->ycam == 11) && e->xdir > -0.5 && e->xdir < 0.2 && e->ydir > 0.7 && e->ydir < 1 && e->qr == 5)
+			e->key49 = 1;
 
 	}
 	if (b == 1 && x && x < SIZE_W && y && y < SIZE_W && e->pause == 0)
@@ -887,8 +901,10 @@ int		mouse_hook(int b, int x, int y, t_env *e)
 		e->take = 1;
 		if (((int)e->xcam == 10 || (int)e->xcam == 11) && (int)e->ycam == 11 && e->xdir < -0.8 && e->xdir > -1 && e->ydir > -0.4 && e->ydir < 0.5)
 			e->qr = 3;
-		if ((int)e->xcam == 9 && ((int)e->xcam == 8 || (int)e->ycam == 7) && e->xdir < 0.4 && e->xdir > -0.8 && e->ydir > 0.5 && e->ydir < 1)
+		if ((int)e->xcam == 9 && ((int)e->ycam == 8 || (int)e->ycam == 7) && e->xdir < 0.4 && e->xdir > -0.8 && e->ydir > 0.5 && e->ydir < 1)
 			e->qr = 4;
+		if (((int)e->xcam == 6 || (int)e->xcam == 5) && (int)e->ycam == 22 && e->xdir < -0.8 && e->xdir > -1 && e->ydir > -0.6 && e->ydir < 0.4)
+			e->qr = 5;
 	}
 
 	if (b == 1 && x > 422 && x < 629 && y < 448 && y > 407 && e->pause == 1 && e->help == 0)
@@ -979,6 +995,10 @@ void	ft_creat_env(t_env *e)
 	e->img_wall[14] = mlx_xpm_file_to_image(e->mlx, "images/wall14.xpm", &width, &width);
 	e->img_wall[13] = mlx_xpm_file_to_image(e->mlx, "images/wall13.xpm", &width, &width);
 	e->img_wall[15] = mlx_xpm_file_to_image(e->mlx, "images/wall15.xpm", &width, &width);
+	e->img_wall[16] = mlx_xpm_file_to_image(e->mlx, "images/wall16.xpm", &width, &width);
+	e->img_wall[17] = mlx_xpm_file_to_image(e->mlx, "images/wall17.xpm", &width, &width);
+	e->img_wall[18] = mlx_xpm_file_to_image(e->mlx, "images/wall18.xpm", &width, &width);
+	e->img_wall[19] = mlx_xpm_file_to_image(e->mlx, "images/wall19.xpm", &width, &width);
 	e->img_door[1] = mlx_xpm_file_to_image(e->mlx, "images/door1.xpm", &width, &width);
 	e->img_door[3] = mlx_xpm_file_to_image(e->mlx, "images/door3.xpm", &width, &width);
 	e->img_door[4] = mlx_xpm_file_to_image(e->mlx, "images/door4.xpm", &width, &width);
@@ -988,6 +1008,20 @@ void	ft_creat_env(t_env *e)
 	e->img_floor[2] = mlx_xpm_file_to_image(e->mlx, "images/floor2.xpm", &width, &width);
 	e->img_floor[3] = mlx_xpm_file_to_image(e->mlx, "images/floor3.xpm", &width, &width);
 	e->img_floor[4] = mlx_xpm_file_to_image(e->mlx, "images/floor4.xpm", &width, &width);
+	e->img_floor[5] = mlx_xpm_file_to_image(e->mlx, "images/floor5.xpm", &width, &width);
+	e->img_floor[6] = mlx_xpm_file_to_image(e->mlx, "images/floor6.xpm", &width, &width);
+	e->img_floor[9] = mlx_xpm_file_to_image(e->mlx, "images/floor9.xpm", &width, &width);
+	e->img_floor[10] = mlx_xpm_file_to_image(e->mlx, "images/floor10.xpm", &width, &width);
+	e->img_floor[11] = mlx_xpm_file_to_image(e->mlx, "images/floor11.xpm", &width, &width);
+	e->img_floor[12] = mlx_xpm_file_to_image(e->mlx, "images/floor12.xpm", &width, &width);
+	e->img_floor[13] = mlx_xpm_file_to_image(e->mlx, "images/floor13.xpm", &width, &width);
+	e->img_floor[14] = mlx_xpm_file_to_image(e->mlx, "images/floor14.xpm", &width, &width);
+	e->img_floor[15] = mlx_xpm_file_to_image(e->mlx, "images/floor15.xpm", &width, &width);
+	e->img_floor[16] = mlx_xpm_file_to_image(e->mlx, "images/floor16.xpm", &width, &width);
+	e->img_floor[17] = mlx_xpm_file_to_image(e->mlx, "images/floor17.xpm", &width, &width);
+	e->img_floor[18] = mlx_xpm_file_to_image(e->mlx, "images/floor18.xpm", &width, &width);
+	e->img_floor[19] = mlx_xpm_file_to_image(e->mlx, "images/floor19.xpm", &width, &width);
+	e->img_floor[20] = mlx_xpm_file_to_image(e->mlx, "images/floor20.xpm", &width, &width);
 	e->img_floor[0] = mlx_xpm_file_to_image(e->mlx, "images/floor0.xpm", &width, &width);
 	e->img_sb[2] = mlx_xpm_file_to_image(e->mlx, "images/sb2.xpm", &width, &width);
 	e->img_obj[1] = mlx_xpm_file_to_image(e->mlx, "images/obj1.xpm", &width, &width);
@@ -999,6 +1033,9 @@ void	ft_creat_env(t_env *e)
 	e->img_obj[7] = mlx_xpm_file_to_image(e->mlx, "images/obj7.xpm", &width, &width);
 	e->img_obj[8] = mlx_xpm_file_to_image(e->mlx, "images/obj8.xpm", &width, &width);
 	e->img_obj[9] = mlx_xpm_file_to_image(e->mlx, "images/obj9.xpm", &width, &width);
+	e->img_obj[10] = mlx_xpm_file_to_image(e->mlx, "images/obj10.xpm", &width, &width);
+	e->img_obj[11] = mlx_xpm_file_to_image(e->mlx, "images/obj11.xpm", &width, &width);
+	e->img_obj[12] = mlx_xpm_file_to_image(e->mlx, "images/obj12.xpm", &width, &width);
 	e->img_bras[0] = mlx_xpm_file_to_image(e->mlx, "images/bras.xpm", &width, &width);
 	e->img_bras[1] = mlx_xpm_file_to_image(e->mlx, "images/bras_a_1.xpm", &width, &width);
 	e->img_bras[2] = mlx_xpm_file_to_image(e->mlx, "images/bras_a_2.xpm", &width, &width);
@@ -1040,6 +1077,10 @@ void	ft_creat_env(t_env *e)
 	e->data_wall[14] = mlx_get_data_addr(e->img_wall[14], &bpp, &ls, &endian);
 	e->data_wall[13] = mlx_get_data_addr(e->img_wall[13], &bpp, &ls, &endian);
 	e->data_wall[15] = mlx_get_data_addr(e->img_wall[15], &bpp, &ls, &endian);
+	e->data_wall[16] = mlx_get_data_addr(e->img_wall[16], &bpp, &ls, &endian);
+	e->data_wall[17] = mlx_get_data_addr(e->img_wall[17], &bpp, &ls, &endian);
+	e->data_wall[18] = mlx_get_data_addr(e->img_wall[18], &bpp, &ls, &endian);
+	e->data_wall[19] = mlx_get_data_addr(e->img_wall[19], &bpp, &ls, &endian);
 	e->data_door[1] = mlx_get_data_addr(e->img_door[1], &bpp, &ls, &endian);
 	e->data_door[3] = mlx_get_data_addr(e->img_door[3], &bpp, &ls, &endian);
 	e->data_door[4] = mlx_get_data_addr(e->img_door[4], &bpp, &ls, &endian);
@@ -1050,6 +1091,20 @@ void	ft_creat_env(t_env *e)
 	e->data_floor[2] = mlx_get_data_addr(e->img_floor[2], &bpp, &ls, &endian);
 	e->data_floor[3] = mlx_get_data_addr(e->img_floor[3], &bpp, &ls, &endian);
 	e->data_floor[4] = mlx_get_data_addr(e->img_floor[4], &bpp, &ls, &endian);
+	e->data_floor[5] = mlx_get_data_addr(e->img_floor[5], &bpp, &ls, &endian);
+	e->data_floor[6] = mlx_get_data_addr(e->img_floor[6], &bpp, &ls, &endian);
+	e->data_floor[9] = mlx_get_data_addr(e->img_floor[9], &bpp, &ls, &endian);
+	e->data_floor[10] = mlx_get_data_addr(e->img_floor[10], &bpp, &ls, &endian);
+	e->data_floor[11] = mlx_get_data_addr(e->img_floor[11], &bpp, &ls, &endian);
+	e->data_floor[12] = mlx_get_data_addr(e->img_floor[12], &bpp, &ls, &endian);
+	e->data_floor[13] = mlx_get_data_addr(e->img_floor[13], &bpp, &ls, &endian);
+	e->data_floor[14] = mlx_get_data_addr(e->img_floor[14], &bpp, &ls, &endian);
+	e->data_floor[15] = mlx_get_data_addr(e->img_floor[15], &bpp, &ls, &endian);
+	e->data_floor[16] = mlx_get_data_addr(e->img_floor[16], &bpp, &ls, &endian);
+	e->data_floor[17] = mlx_get_data_addr(e->img_floor[17], &bpp, &ls, &endian);
+	e->data_floor[18] = mlx_get_data_addr(e->img_floor[18], &bpp, &ls, &endian);
+	e->data_floor[19] = mlx_get_data_addr(e->img_floor[19], &bpp, &ls, &endian);
+	e->data_floor[20] = mlx_get_data_addr(e->img_floor[20], &bpp, &ls, &endian);
 	e->data_floor[0] = mlx_get_data_addr(e->img_floor[0], &bpp, &ls, &endian);
 	e->data_obj[1] = mlx_get_data_addr(e->img_obj[1], &bpp, &ls, &endian);
 	e->data_obj[2] = mlx_get_data_addr(e->img_obj[2], &bpp, &ls, &endian);
@@ -1060,6 +1115,9 @@ void	ft_creat_env(t_env *e)
 	e->data_obj[7] = mlx_get_data_addr(e->img_obj[7], &bpp, &ls, &endian);
 	e->data_obj[8] = mlx_get_data_addr(e->img_obj[8], &bpp, &ls, &endian);
 	e->data_obj[9] = mlx_get_data_addr(e->img_obj[9], &bpp, &ls, &endian);
+	e->data_obj[10] = mlx_get_data_addr(e->img_obj[10], &bpp, &ls, &endian);
+	e->data_obj[11] = mlx_get_data_addr(e->img_obj[11], &bpp, &ls, &endian);
+	e->data_obj[12] = mlx_get_data_addr(e->img_obj[12], &bpp, &ls, &endian);
 	mlx_key_down_hook(e->win, key_down_hook, e);
 	mlx_key_up_hook(e->win, key_up_hook, e);
 	mlx_loop_hook(e->mlx, loop_hook, e);
