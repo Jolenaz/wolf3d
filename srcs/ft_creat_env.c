@@ -6,7 +6,7 @@
 /*   By: jbelless <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/01/27 10:44:56 by jbelless          #+#    #+#             */
-/*   Updated: 2016/02/19 14:53:06 by jbelless         ###   ########.fr       */
+/*   Updated: 2016/02/19 15:09:42 by jbelless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -290,7 +290,7 @@ void	ft_put_door(t_env *e)
 				texx = SIZE_T - texx - 1;
 			if (abs(e->map[e->zdoor[x].mapx][e->zdoor[x].mapy]) == 7 && e->keytex == 1)
 			{
-				if (e->zdoor[x].side == 1 && e->zdoor[x].raydiry > 0)
+				if (e->zdoor[x].side == 0 && e->zdoor[x].raydirx > 0)
 					ft_put_door_line(x, texx, drawstart, drawend, abs(e->map[e->zdoor[x].mapx][e->zdoor[x].mapy]), e, lineheight);
 				else
 					ft_put_door_line(x, texx, drawstart, drawend, abs(e->map[e->zdoor[x].mapx][e->zdoor[x].mapy]) + 1, e, lineheight);
@@ -624,10 +624,10 @@ void	ft_show_pic(t_env *e)
 void	ft_check_vic(t_env *e)
 {
 	if ((int)e->xcam == 2 && (int)e->ycam == 16)
-		e->map3[2][17] = 0;
+		e->map3[3][16] = 0;
 	else
-		e->map3[2][17] = 1;
-	if ((int)e->xcam == 2 && (int)e->ycam == 17)
+		e->map3[3][16] = 1;
+	if ((int)e->xcam == 3 && (int)e->ycam == 16)
 	{
 		e->vic = 1;
 		e->pause = 1;
@@ -927,7 +927,7 @@ int		mouse_move_hook(int x, int y, t_env *e)
 
 int		mouse_hook(int b, int x, int y, t_env *e)
 {
-	printf("xcam = %d, ycam = %d, xdir = %f, ydir = %f\n",(int)e->xcam , (int)e->ycam, e->xdir, e->ydir);
+//	printf("xcam = %d, ycam = %d, xdir = %f, ydir = %f\n",(int)e->xcam , (int)e->ycam, e->xdir, e->ydir);
 	if (b == 2 && x && x < SIZE_W && y && y < SIZE_W && e->pause == 0)
 	{
 		e->show = 1;
@@ -991,8 +991,8 @@ void	ft_creat_env(t_env *e)
 	endian = 0;
 	e->mlx = mlx_init();
 	e->win = mlx_new_window(e->mlx, SIZE_W, SIZE_W, "Wolf 3D");
-	e->xcam = 2;
-	e->ycam = 16;
+	e->xcam = 3;
+	e->ycam = 18;
 	e->xdir = -1;
 	e->ydir = 0;
 	e->xscreen = 0;
