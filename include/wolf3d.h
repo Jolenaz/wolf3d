@@ -76,6 +76,7 @@ typedef struct	s_env
 	int			take;
 	int			show;
 	int			qr;
+	int			vic;
 	t_obj		*tabobj;
 	int			nbobj;
 	int			dd;
