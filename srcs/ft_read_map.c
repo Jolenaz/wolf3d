@@ -6,7 +6,7 @@
 /*   By: jbelless <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/02/15 09:04:46 by jbelless          #+#    #+#             */
-/*   Updated: 2016/02/15 12:21:05 by jbelless         ###   ########.fr       */
+/*   Updated: 2016/02/19 18:25:21 by jbelless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,6 +53,7 @@ void	ft_read_map(int fd, t_env *e)
 	e->map = NULL;
 	e->map2 = NULL;
 	e->map3 = NULL;
+	line = (char*)malloc(sizeof (char));
 	if ((ret = get_next_line(fd, &line)) == -1)
 		exit(0);
 	e->lmap = ft_atoi(line);
