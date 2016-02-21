@@ -14,32 +14,6 @@
 #include <stdio.h>
 #include <time.h>
 
-void	put_pixelle(int x, int y, unsigned int *couleur, t_env *e)
-{
-	unsigned char	*c;
-	unsigned int	*ptrc;
-
-	ptrc = couleur;
-	c = (unsigned char*)e->data[0] + x * 4 + y * 4 * SIZE_W;
-	*c = *((unsigned char*)ptrc);
-	*(c + 1) = *((unsigned char*)ptrc + 1);
-	*(c + 2) = *((unsigned char*)ptrc + 2);
-	*(c + 3) = *((unsigned char*)ptrc + 3);
-}
-
-void	put_pixelle_sb(int x, int y, unsigned int *couleur, t_env *e)
-{
-	unsigned char	*c;
-	unsigned int	*ptrc;
-
-	ptrc = couleur;
-	c = (unsigned char*)e->data[1] + x * 4 + y * 4 * SIZE_W;
-	*c = *((unsigned char*)ptrc);
-	*(c + 1) = *((unsigned char*)ptrc + 1);
-	*(c + 2) = *((unsigned char*)ptrc + 2);
-	*(c + 3) = *((unsigned char*)ptrc + 3);
-}
-
 void	ft_init_ob_im(t_env *e)
 {
 	unsigned int couleur;
@@ -59,20 +33,6 @@ void	ft_init_ob_im(t_env *e)
 		}
 		x++;
 	}
-}
-
-
-int		ft_couleur(int wall, int side)
-{
-	if (wall == 1 || (wall == 12 && side == 0) || (wall == 21 && side == 0) || (wall == 12 && side == 0))
-		return (0x000099);
-	else if (wall == 2 || (wall == 23 && side == 1) || (wall == 21 && side == 1) || (wall == 12 && side == 1))
-		return (0xff0000);
-	else if (wall == 3 || (wall == 23 && side == 0))
-		return (0xffff00);
-	else if (wall == 4)
-		return (0x66ff00);
-	return (0);
 }
 
 void	ft_cop_door(int texx, int texy, int x, int y, int door, t_env *e)
@@ -137,37 +97,6 @@ void	ft_cop_floor(int texx, int texy, int x, int y, int floor, t_env *e)
 	free(ptrc);
 }
 
-void	ft_cop_sb(int texx, int texy, int x, int y, int sb, t_env *e)
-{
-	unsigned char	*c;
-	unsigned int	*ptrc;
-
-	ptrc = (unsigned int*)malloc(sizeof(unsigned int));
-	c = (unsigned char*)e->data_sb[sb] + texx * 4 + texy * 4 * 3000;
-	*((unsigned char*)ptrc) = *c;
-	*((unsigned char*)ptrc + 1) = *(c + 1);
-	*((unsigned char*)ptrc + 2) = *(c + 2);
-	*((unsigned char*)ptrc + 3) = *(c + 3);
-	put_pixelle_sb(x, y, ptrc, e);
-	free(ptrc);
-}
-void	ft_cop_obj(int texx, int texy, int x, int y, int obj, t_env *e)
-{	
-	unsigned char	*c;
-	unsigned int	*ptrc;
-
-	ptrc = (unsigned int*)malloc(sizeof(unsigned int));
-	c = (unsigned char*)e->data_obj[obj] + texx * 4 + texy * 4 * SIZE_O;
-	*((unsigned char*)ptrc) = *c;
-	*((unsigned char*)ptrc + 1) = *(c + 1);
-	*((unsigned char*)ptrc + 2) = *(c + 2);
-	*((unsigned char*)ptrc + 3) = *(c + 3);
-	if (*ptrc != 0xff000000)
-		put_pixelle(x, y, ptrc, e);
-	free(ptrc);
-
-}
-
 void	ft_put_text_line(int x, int texx, int drawstart, int drawend, int wall, t_env *e, int side, int lineheight, double distwall, double floorxwall, double floorywall)
 {
 	int y;
@@ -217,26 +146,6 @@ void	ft_put_text_line(int x, int texx, int drawstart, int drawend, int wall, t_e
 			d = (y - drawstart) * 256;
 		int texy = ((d * SIZE_T) / lineheight) / 256;
 		ft_cop_wall(texx, texy, x, y, wall, e, side);
-		y++;
-	}
-}
-
-void	ft_putline(int x, int drawstart, int drawend, int wall, t_env *e, int side)
-{
-	int y;
-	unsigned int couleur;
-
-	y = 0;
-	couleur = 0x666666;
-	while (y < SIZE_W)
-	{
-		if (y < drawstart)
-			couleur = 0x77b5fe;
-		else if (y < drawend)
-			couleur = ft_couleur(wall, side);
-		else 
-			couleur = 0xcccccc;
-		put_pixelle(x, y, &couleur, e);
 		y++;
 	}
 }
@@ -439,82 +348,6 @@ void	ft_modim(t_env *e)
 	}
 }
 
-void	ft_put_skybox(t_env *e)
-{
-	int x;
-	int texx;
-	int y;
-	int sb;
-
-	if (e->map2[(int)e->xcam][(int)e->ycam] <= 3)
-		sb = 2;
-	else 
-		sb = 3;
-	x = 0;
-	while (x < SIZE_W)
-	{
-		texx = x + (int)(atan2(e->xdir, e->ydir) / M_PI * 1500) + 3000;
-		y = 0;
-		while (y < SIZE_W)
-		{
-			ft_cop_sb(texx, y, x, y, sb, e);
-			y++;
-		}
-		x++;
-	}
-}
-
-void	ft_put_obj(t_env *e)
-{
-	int i;
-
-	i = 0;
-	while (i < e->nbobj)
-	{
-		double xobj = e->tabobj[i].x - e->xcam + 0.5;
-		double yobj = e->tabobj[i].y - e->ycam + 0.5;
-		double invdev = 1.0 / (e->xscreen * e->ydir - e->xdir * e->yscreen);
-		double transformx = invdev * (e->ydir * xobj - e->xdir * yobj);
-		double transformy = invdev * (-e->yscreen * xobj + e->xscreen * yobj);
-		int xscreenobj = (int)((SIZE_W / 2) * (1 + transformx / transformy));
-		int objheight = abs((int)(SIZE_W / transformy));
-		int drawstarty = -objheight / 2 + SIZE_W / 2;
-		if (drawstarty < 0)
-			drawstarty= 0;
-		int drawendy = objheight / 2 + SIZE_W / 2;
-		if (drawendy > SIZE_W)
-			drawendy = SIZE_W - 1;
-		int objwidth = abs((int)(SIZE_W / transformy));
-		int drawstartx = -objwidth / 2 + xscreenobj;
-		if (drawstartx < 0)
-			drawstartx = 0;
-		int drawendx = objwidth / 2 + xscreenobj;
-		if (drawendx > SIZE_W)
-			drawendx = SIZE_W - 1;
-		int x = drawstartx;
-		int y;
-		int texx;
-		int texy;
-		while (x < drawendx)
-		{
-			y = drawstarty;
-			texx = (int)(256 * (x - (-objwidth / 2 + xscreenobj)) * SIZE_O / objwidth) / 256;
-			if (transformy > 0 && x > 0 && x < SIZE_W && transformy < e->zbuff[x])
-			{
-				while (y < drawendy)
-				{
-					int d = y * 256 - SIZE_W * 128 + objheight * 128;
-					texy = ((d * SIZE_O) / objheight) / 256;
-					ft_cop_obj(texx, texy, x, y, e->tabobj[i].type, e);
-					y++;
-				}
-			}
-			x++;
-		}
-		i++;
-	}
-}
-
 void	ft_init_buff(t_env *e)
 {
 	int x;
@@ -537,106 +370,6 @@ void	ft_init_buff(t_env *e)
 
 }
 
-void	ft_move_pause(t_env *e)
-{
-	static int i = 1;
-
-	if (i < 9)
-	{
-		if (i < 7)
-		{
-			mlx_put_image_to_window(e->mlx, e->win, e->img[0], 0, 0);
-			mlx_put_image_to_window(e->mlx, e->win, e->img_bras[i], 250, 650);
-		}
-		else if (i < 9)
-		{
-			mlx_put_image_to_window(e->mlx, e->win, e->img[0], 0, 0);
-			mlx_put_image_to_window(e->mlx, e->win, e->img_bras[i], 0, 0);
-		}
-		i++;
-		if (i == 9)
-		{
-			i = 1;
-			e->pause = 1;
-		}	
-	}
-}
-
-void	ft_move_back_pause(t_env *e)
-{
-	static int j = 6;
-
-	if (j > 0)
-	{
-		mlx_put_image_to_window(e->mlx, e->win, e->img[0], 0, 0);
-		mlx_put_image_to_window(e->mlx, e->win, e->img_bras[j], 250, 650);
-		j--;
-		if (j == 0)
-		{
-			j = 6;
-			e->pause = 0;
-		}	
-	}
-}
-
-void	ft_take_pic(t_env *e)
-{
-	static int j = 17;
-
-	if (j < 30)
-	{
-		mlx_put_image_to_window(e->mlx, e->win, e->img[0], 0, 0);
-		if (j <= 22)
-			mlx_put_image_to_window(e->mlx, e->win, e->img_bras[j], 250, 650);
-		else if (j == 23)
-			mlx_put_image_to_window(e->mlx, e->win, e->img_bras[23], 0, 0);
-		else
-			mlx_put_image_to_window(e->mlx, e->win, e->img_bras[46 - j], 250, 650);
-		j++;
-		if (j == 30)
-		{
-			j = 17;
-			e->take = 0;
-		}	
-	}
-}
-
-void	ft_show_pic(t_env *e)
-{
-	static int j = 10;
-
-	if (j < 23)
-	{
-		mlx_put_image_to_window(e->mlx, e->win, e->img[0], 0, 0);
-		if (j <= 16)
-			mlx_put_image_to_window(e->mlx, e->win, e->img_bras[j], 250, 650);
-		else
-			mlx_put_image_to_window(e->mlx, e->win, e->img_bras[32 - j], 250, 650);
-		j++;
-		if (j == 23)
-		{
-			j = 10;
-			e->show = 0;
-		}	
-	}
-}
-
-void	ft_check_vic(t_env *e)
-{
-	if ((int)e->xcam == 2 && (int)e->ycam == 16)
-		e->map3[3][16] = 0;
-	else
-		e->map3[3][16] = 1;
-	if ((int)e->xcam == 3 && (int)e->ycam == 16)
-	{
-		e->vic = 1;
-		e->pause = 1;
-		e->key53 = 1;
-		mlx_put_image_to_window(e->mlx, e->win, e->img_bras[7], 0, 0);
-	}
-
-}
-
 void	ft_creat_img(t_env *e)
 {
 	int bpp;
@@ -650,9 +383,9 @@ void	ft_creat_img(t_env *e)
 	e->img[1] = mlx_new_image(e->mlx, SIZE_W, SIZE_W);
 	e->data[0] = mlx_get_data_addr(e->img[0], &bpp, &ls, &endian);
 	e->data[1] = mlx_get_data_addr(e->img[1], &bpp, &ls, &endian);
+	ft_init_ob_im(e);
 	ft_check_vic(e);
 	mlx_clear_window(e->mlx, e->win);
-	ft_init_ob_im(e);
 	ft_init_buff(e);
 	ft_sort_obj(e);
 	ft_put_skybox(e);
@@ -991,8 +724,8 @@ void	ft_creat_env(t_env *e)
 	endian = 0;
 	e->mlx = mlx_init();
 	e->win = mlx_new_window(e->mlx, SIZE_W, SIZE_W, "Wolf 3D");
-	e->xcam = 3;
-	e->ycam = 18;
+	e->xcam = 25;
+	e->ycam = 25;
 	e->xdir = -1;
 	e->ydir = 0;
 	e->xscreen = 0;

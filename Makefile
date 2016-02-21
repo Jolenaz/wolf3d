@@ -74,6 +74,11 @@ SRC_NAME = main.c \
 		ft_creat_env.c \
 		ft_sort_obj.c \
 		ft_creat_obj_env.c \
+		ft_put_pixelle.c \
+		ft_put_line.c \
+		ft_put_obj.c \
+		ft_put_sky.c \
+		ft_even1.c \
 
 OBJ_NAME = $(SRC_NAME:.c=.o)
 
