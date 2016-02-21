@@ -453,9 +453,9 @@ void	ft_put_skybox(t_env *e)
 	x = 0;
 	while (x < SIZE_W)
 	{
-		texx = x + (int)(atan2(e->xdir, e->ydir) / M_PI * 3000) + 3000;
+		texx = x + (int)(atan2(e->xdir, e->ydir) / M_PI * 1500) + 3000;
 		y = 0;
-		while (y < 500)
+		while (y < SIZE_W)
 		{
 			ft_cop_sb(texx, y, x, y, sb, e);
 			y++;
@@ -659,7 +659,7 @@ void	ft_creat_img(t_env *e)
 	ft_modim(e);
 	ft_put_door(e);
 	ft_put_obj(e);
-	//	mlx_put_image_to_window(e->mlx, e->win, e->img[1], 0, 0);
+	mlx_put_image_to_window(e->mlx, e->win, e->img[1], 0, 0);
 	mlx_put_image_to_window(e->mlx, e->win, e->img[0], 0, 0);
 	if (e->key53)
 		ft_move_pause(e);
@@ -675,7 +675,7 @@ void	ft_creat_img(t_env *e)
 		mlx_put_image_to_window(e->mlx, e->win, e->img_bras[30 + e->qr], 0, 600);
 
 	mlx_destroy_image(e->mlx, e->img[0]);
-	//	mlx_destroy_image(e->mlx, e->img[1]);
+	mlx_destroy_image(e->mlx, e->img[1]);
 }
 
 int		key_down_hook(int kc, t_env *e)
@@ -1076,7 +1076,7 @@ void	ft_creat_env(t_env *e)
 	e->img_floor[20] = mlx_xpm_file_to_image(e->mlx, "images/floor20.xpm", &width, &width);
 	e->img_floor[0] = mlx_xpm_file_to_image(e->mlx, "images/floor0.xpm", &width, &width);
 	e->img_sb[2] = mlx_xpm_file_to_image(e->mlx, "images/sb2.xpm", &width, &width);
-	e->img_sb[3] = mlx_xpm_file_to_image(e->mlx, "images/sb2.xpm", &width, &width);
+	e->img_sb[3] = mlx_xpm_file_to_image(e->mlx, "images/sb3.xpm", &width, &width);
 	e->img_obj[1] = mlx_xpm_file_to_image(e->mlx, "images/obj1.xpm", &width, &width);
 	e->img_obj[2] = mlx_xpm_file_to_image(e->mlx, "images/obj2.xpm", &width, &width);
 	e->img_obj[3] = mlx_xpm_file_to_image(e->mlx, "images/obj3.xpm", &width, &width);
