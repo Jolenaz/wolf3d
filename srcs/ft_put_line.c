@@ -13,23 +13,22 @@ int		ft_couleur(int wall, int side)
 	return (0);
 }
 
-void	ft_putline(int x, int drawstart, int drawend, int wall, t_env *e, int side)
+void	ft_putline(t_pict pict, t_env *e)
 {
-	int y;
 	unsigned int couleur;
 
-	y = 0;
+	pict.y = 0;
 	couleur = 0x666666;
-	while (y < SIZE_W)
+	while (pict.y < SIZE_W)
 	{
-		if (y < drawstart)
+		if (pict.y < pict.drawstart)
 			couleur = 0x77b5fe;
-		else if (y < drawend)
-			couleur = ft_couleur(wall, side);
+		else if (pict.y < pict.drawend)
+			couleur = ft_couleur(pict.tex, pict.side);
 		else 
 			couleur = 0xcccccc;
-		put_pixelle(x, y, &couleur, e);
-		y++;
+		put_pixelle(pict.x, pict.y, &couleur, e);
+		pict.y++;
 	}
 }
 

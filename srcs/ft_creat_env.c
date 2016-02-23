@@ -6,7 +6,7 @@
 /*   By: jbelless <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/01/27 10:44:56 by jbelless          #+#    #+#             */
-/*   Updated: 2016/02/19 15:09:42 by jbelless         ###   ########.fr       */
+/*   Updated: 2016/02/23 12:02:11 by jbelless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,316 +35,335 @@ void	ft_init_ob_im(t_env *e)
 	}
 }
 
-void	ft_cop_door(int texx, int texy, int x, int y, int door, t_env *e)
+void	ft_cop_door(t_pict pict, t_env *e)
 {
 	unsigned char	*c;
 	unsigned int	*ptrc;
 
 	ptrc = (unsigned int*)malloc(sizeof(unsigned int));
-	if (door == 1 || door == 2)
-		c = (unsigned char*)e->data_door[1] + (texx + e->dd) * 4 + texy * 8 * SIZE_T;
+	if (pict.tex == 1 || pict.tex == 2)
+		c = (unsigned char*)e->data_door[1] + (pict.texx + e->dd) * 4 + pict.texy * 8 * SIZE_T;
 	else
-		c = (unsigned char*)e->data_door[door] + (texx + e->dd) * 4 + texy * 8 * SIZE_T;
+		c = (unsigned char*)e->data_door[pict.tex] + (pict.texx + e->dd) * 4 + pict.texy * 8 * SIZE_T;
 	*((unsigned char*)ptrc) = *c;
 	*((unsigned char*)ptrc + 1) = *(c + 1);
 	*((unsigned char*)ptrc + 2) = *(c + 2);
 	*((unsigned char*)ptrc + 3) = *(c + 3);
 	if (*ptrc != 0xff000000)
-		put_pixelle(x, y, ptrc, e);
+		put_pixelle(pict.x, pict.y, ptrc, e);
 	free(ptrc);
 }
 
-void	ft_cop_wall(int texx, int texy, int x, int y, int wall, t_env *e, int side)
+void	ft_cop_wall(t_pict pict, t_env *e)
 {
 	unsigned char	*c;
 	unsigned int	*ptrc;
 
 	ptrc = (unsigned int*)malloc(sizeof(unsigned int));
-	if (wall == 1 || (wall == 12 && side == 0) || (wall == 21 && side == 0) || (wall == 12 && side == 0))
-		c = (unsigned char*)e->data_wall[1] + texx * 4 + texy * 4 * SIZE_T;
-	else if (wall == 2 || (wall == 21 && side == 1) || (wall == 12 && side == 1))
-		c = (unsigned char*)e->data_wall[2] + texx * 4 + texy * 4 * SIZE_T;
-	else if (wall == 3)
-		c = (unsigned char*)e->data_wall[3] + texx * 4 + texy * 4 * SIZE_T;
-	else if (wall == 4)
-		c = (unsigned char*)e->data_wall[4] + texx * 4 + texy * 4 * SIZE_T;
-	else if (wall == 5)
-		c = (unsigned char*)e->data_wall[5] + texx * 4 + texy * 4 * SIZE_T;
+	if (pict.tex == 1 || (pict.tex == 12 && pict.side == 0) || (pict.tex == 21 && pict.side == 0) || (pict.tex == 12 && pict.side == 0))
+		c = (unsigned char*)e->data_wall[1] + pict.texx * 4 + pict.texy * 4 * SIZE_T;
+	else if (pict.tex == 2 || (pict.tex == 21 && pict.side == 1) || (pict.tex == 12 && pict.side == 1))
+		c = (unsigned char*)e->data_wall[2] + pict.texx * 4 + pict.texy * 4 * SIZE_T;
 	else
-		c = (unsigned char*)e->data_wall[wall] + texx * 4 + texy * 4 * SIZE_T;
+		c = (unsigned char*)e->data_wall[pict.tex] + pict.texx * 4 + pict.texy * 4 * SIZE_T;
 	*((unsigned char*)ptrc) = *c;
 	*((unsigned char*)ptrc + 1) = *(c + 1);
 	*((unsigned char*)ptrc + 2) = *(c + 2);
 	*((unsigned char*)ptrc + 3) = *(c + 3);
-	if (side == 0 && (wall == 2 || wall == 3))
+	if (pict.side == 0 && (pict.tex == 2 || pict.tex == 3))
 		*ptrc -= 0x101010;
-	put_pixelle(x, y, ptrc, e);
+	put_pixelle(pict.x, pict.y, ptrc, e);
 	free(ptrc);
 }
 
-void	ft_cop_floor(int texx, int texy, int x, int y, int floor, t_env *e)
+void	ft_cop_floor(t_flo flo, t_env *e)
 {
 	unsigned char	*c;
 	unsigned int	*ptrc;
 
 	ptrc = (unsigned int*)malloc(sizeof(unsigned int));
-	c = (unsigned char*)e->data_floor[floor] + texx * 4 + texy * 4 * SIZE_T;
+	c = (unsigned char*)e->data_floor[flo.tex] + flo.floortexx * 4 + flo.floortexy * 4 * SIZE_T;
 	*((unsigned char*)ptrc) = *c;
 	*((unsigned char*)ptrc + 1) = *(c + 1);
 	*((unsigned char*)ptrc + 2) = *(c + 2);
 	*((unsigned char*)ptrc + 3) = *(c + 3);
-	put_pixelle(x, y, ptrc, e);
+	put_pixelle(flo.x, flo.y, ptrc, e);
 	free(ptrc);
 }
 
-void	ft_put_text_line(int x, int texx, int drawstart, int drawend, int wall, t_env *e, int side, int lineheight, double distwall, double floorxwall, double floorywall)
+void	ft_put_text_line(t_pict pict, t_env *e)
 {
-	int y;
-	int d;
-	double currentdist;
+	t_flo	flo;
 
-	y = drawend;
-	if (wall != 5)
+	pict.y = pict.drawend;
+	if (pict.tex != 5)
 	{
-		while (y < SIZE_W)
+		while (pict.y < SIZE_W)
 		{
-			currentdist =  (double)SIZE_W / (2.0 * (double)y - (double)SIZE_W);
-			double weight;
-			weight = currentdist / distwall;
-			double currentfloorx;
-			double currentfloory;
-			int floortexx;
-			int floortexy;
-			currentfloorx = weight * floorxwall + (1.0 - weight) * (double)e->xcam;
-			currentfloory = weight * floorywall + (1.0 - weight) * (double)e->ycam;
-			floortexx = (int)(currentfloorx * (double)SIZE_T) % SIZE_T;
-			floortexy = (int)(currentfloory * (double)SIZE_T) % SIZE_T;
-			if(drawend != SIZE_W - 1 && (int)currentfloorx < 32 && (int)currentfloory < 32) 
+			flo.currentdist =  (double)SIZE_W / (2.0 * (double)pict.y - (double)SIZE_W);
+			flo.weight = flo.currentdist / pict.perpwalldist;
+			flo.currentfloorx = flo.weight * pict.floorxwall + (1.0 - flo.weight) * (double)e->xcam;
+			flo.currentfloory = flo.weight * pict.floorywall + (1.0 - flo.weight) * (double)e->ycam;
+			flo.floortexx = (int)(flo.currentfloorx * (double)SIZE_T) % SIZE_T;
+			flo.floortexy = (int)(flo.currentfloory * (double)SIZE_T) % SIZE_T;
+			if(pict.drawend != SIZE_W - 1 && (int)(flo.currentfloorx) < 32 && (int)(flo.currentfloory) < 32) 
 			{
-				if (e->map2[(int)currentfloorx][(int)currentfloory] > 0 && e->map2[(int)currentfloorx][(int)currentfloory] < 9 )
+				flo.x = pict.x;
+				if (e->map2[(int)(flo.currentfloorx)][(int)(flo.currentfloory)] > 0 && e->map2[(int)(flo.currentfloorx)][(int)(flo.currentfloory)] < 9 )
 				{
-					ft_cop_floor(floortexx, floortexy, x, SIZE_W - y, e->map2[(int)currentfloorx][(int)currentfloory] + 1, e);
-					ft_cop_floor(floortexx, floortexy, x, y, e->map2[(int)currentfloorx][(int)currentfloory], e);
+					flo.y = SIZE_W - pict.y;
+					flo.tex = e->map2[(int)(flo.currentfloorx)][(int)(flo.currentfloory)] + 1;
+					ft_cop_floor(flo, e);
+					flo.y = pict.y;
+					flo.tex = e->map2[(int)(flo.currentfloorx)][(int)(flo.currentfloory)];
+					ft_cop_floor(flo, e);
 				}
-				else if (e->map2[(int)currentfloorx][(int)currentfloory] == 0)
-					ft_cop_floor(floortexx, floortexy, x, y, 0, e);
-				else if (e->map2[(int)currentfloorx][(int)currentfloory] >= 0 )
+				else if (e->map2[(int)(flo.currentfloorx)][(int)(flo.currentfloory)] == 0)
 				{
-					ft_cop_floor(floortexx, floortexy, x, SIZE_W - y, 6, e);
-					ft_cop_floor(floortexx, floortexy, x, y, e->map2[(int)currentfloorx][(int)currentfloory], e);
+					flo.tex = 0;
+					flo.y = pict.y;
+					ft_cop_floor(flo, e);
+				}
+				else if (e->map2[(int)(flo.currentfloorx)][(int)(flo.currentfloory)] >= 0 )
+				{
+					flo.y = SIZE_W - pict.y;
+					flo.tex = 6;
+					ft_cop_floor(flo, e);
+					flo.y = pict.y;
+					flo.tex = e->map2[(int)(flo.currentfloorx)][(int)(flo.currentfloory)];
+					ft_cop_floor(flo, e);
 				}
 			}
-			y++;
+			pict.y++;
 		}
 	}
-	y = drawstart;
-	while (y < drawend)
+	pict.y = pict.drawstart;
+	while (pict.y < pict.drawend)
 	{	
-		if (wall != 5)
-			d = y * 256 - SIZE_W * 128 + lineheight * 128;
+		if (pict.tex != 5)
+			pict.d = pict.y * 256 - SIZE_W * 128 + pict.lineheight * 128;
 		else 
-			d = (y - drawstart) * 256;
-		int texy = ((d * SIZE_T) / lineheight) / 256;
-		ft_cop_wall(texx, texy, x, y, wall, e, side);
-		y++;
+			pict.d = (pict.y - pict.drawstart) * 256;
+		pict.texy = ((pict.d * SIZE_T) / pict.lineheight) / 256;
+		ft_cop_wall(pict, e);
+		pict.y++;
 	}
 }
 
-void	ft_put_door_line(int x, int texx, int drawstart, int drawend, int door, t_env *e, int lineheight)
+void	ft_put_door_line(t_pict pict, t_env *e)
 {
-	int y;
+	int d;
 
-	y = drawstart;
-	while (y < drawend)
+	pict.y = pict.drawstart;
+	while (pict.y < pict.drawend)
 	{
-		int d = y * 256 - SIZE_W * 128 + lineheight * 128;
-		int texy = ((d * SIZE_T) / lineheight) / 256;
-		ft_cop_door(texx, texy, x, y, door, e);
-		y++;
+		d = pict.y * 256 - SIZE_W * 128 + pict.lineheight * 128;
+		pict.texy = ((d * SIZE_T) / pict.lineheight) / 256;
+		ft_cop_door(pict, e);
+		pict.y++;
 	}
 }
 
 void	ft_put_door(t_env *e)
 {
-	int x;
-	double perpwalldist;
+	t_pict pict;
+	double wallx;
+	int tmp;
 
-	x = 0;
-	while (x < SIZE_W)
+	pict.x = 0;
+	while (pict.x < SIZE_W)
 	{
-		if (e->zisdoor[x])
+		if (e->zisdoor[pict.x])
 		{
-			if (e->zdoor[x].side == 0)
-				perpwalldist = fabs((e->zdoor[x].mapx - e->zdoor[x].rayposx + (1 - e->zdoor[x].stepx) / 2) / e->zdoor[x].raydirx);
+			if (e->zdoor[pict.x].side == 0)
+				pict.perpwalldist = fabs((e->zdoor[pict.x].mapx - e->zdoor[pict.x].rayposx + (1 - e->zdoor[pict.x].stepx) / 2) / e->zdoor[pict.x].raydirx);
 			else
-				perpwalldist = fabs((e->zdoor[x].mapy - e->zdoor[x].rayposy + (1 - e->zdoor[x].stepy) / 2) / e->zdoor[x].raydiry);
-			e->zbuff[x] = perpwalldist;
-			int lineheight = (int)(SIZE_W / perpwalldist);
-			int drawstart = -lineheight / 2 + SIZE_W / 2;
-			if (drawstart < 0)
-				drawstart = 0;
-			int drawend = lineheight / 2 + SIZE_W / 2;
-			if (drawend > SIZE_W)
-				drawend = SIZE_W - 1;
-			double wallx;
-			if (e->zdoor[x].side == 1)
-				wallx = e->zdoor[x].rayposx + ((e->zdoor[x].mapy - e->zdoor[x].rayposy + (1 - e->zdoor[x].stepy) / 2) / e->zdoor[x].raydiry) * e->zdoor[x].raydirx;
+				pict.perpwalldist = fabs((e->zdoor[pict.x].mapy - e->zdoor[pict.x].rayposy + (1 - e->zdoor[pict.x].stepy) / 2) / e->zdoor[pict.x].raydiry);
+			e->zbuff[pict.x] = pict.perpwalldist;
+			pict.lineheight = (int)(SIZE_W / pict.perpwalldist);
+			pict.drawstart = -pict.lineheight / 2 + SIZE_W / 2;
+			if (pict.drawstart < 0)
+				pict.drawstart = 0;
+			pict.drawend = pict.lineheight / 2 + SIZE_W / 2;
+			if (pict.drawend > SIZE_W)
+				pict.drawend = SIZE_W - 1;
+			if (e->zdoor[pict.x].side == 1)
+				wallx = e->zdoor[pict.x].rayposx + ((e->zdoor[pict.x].mapy - e->zdoor[pict.x].rayposy + (1 - e->zdoor[pict.x].stepy) / 2) / e->zdoor[pict.x].raydiry) * e->zdoor[pict.x].raydirx;
 			else
-				wallx = e->zdoor[x].rayposy + ((e->zdoor[x].mapx - e->zdoor[x].rayposx + (1 - e->zdoor[x].stepx) / 2) / e->zdoor[x].raydirx) * e->zdoor[x].raydiry;
+				wallx = e->zdoor[pict.x].rayposy + ((e->zdoor[pict.x].mapx - e->zdoor[pict.x].rayposx + (1 - e->zdoor[pict.x].stepx) / 2) / e->zdoor[pict.x].raydirx) * e->zdoor[pict.x].raydiry;
 			wallx -= floor(wallx);
-			int texx = (int)(wallx * (double)SIZE_T);
-			if (e->zdoor[x].side == 0 && e->zdoor[x].raydirx > 0)
-				texx = SIZE_T - texx - 1;
-			if (e->zdoor[x].side == 1 && e->zdoor[x].raydiry < 0)
-				texx = SIZE_T - texx - 1;
-			if (abs(e->map[e->zdoor[x].mapx][e->zdoor[x].mapy]) == 7 && e->keytex == 1)
+			pict.texx = (int)(wallx * (double)SIZE_T);
+			if (e->zdoor[pict.x].side == 0 && e->zdoor[pict.x].raydirx > 0)
+				pict.texx = SIZE_T - pict.texx - 1;
+			if (e->zdoor[pict.x].side == 1 && e->zdoor[pict.x].raydiry < 0)
+				pict.texx = SIZE_T - pict.texx - 1;
+			if (abs(e->map[e->zdoor[pict.x].mapx][e->zdoor[pict.x].mapy]) == 7 && e->keytex == 1)
 			{
-				if (e->zdoor[x].side == 0 && e->zdoor[x].raydirx > 0)
-					ft_put_door_line(x, texx, drawstart, drawend, abs(e->map[e->zdoor[x].mapx][e->zdoor[x].mapy]), e, lineheight);
+				if (e->zdoor[pict.x].side == 0 && e->zdoor[pict.x].raydirx > 0)
+				{
+					pict.tex = abs(e->map[e->zdoor[pict.x].mapx][e->zdoor[pict.x].mapy]);
+					ft_put_door_line(pict, e);
+				}
 				else
-					ft_put_door_line(x, texx, drawstart, drawend, abs(e->map[e->zdoor[x].mapx][e->zdoor[x].mapy]) + 1, e, lineheight);
+				{
+					pict.tex = abs(e->map[e->zdoor[pict.x].mapx][e->zdoor[pict.x].mapy]) + 1;
+					ft_put_door_line(pict, e);
+				}
 			}
 			else if (e->keytex == 1)
 			{
-				if (e->map2[(int)e->xcam][(int)e->ycam] == 0 && e->map[e->zdoor[x].mapx][e->zdoor[x].mapy] == -1)
-					ft_put_door_line(x, texx, drawstart, drawend, abs(e->map[e->zdoor[x].mapx][e->zdoor[x].mapy]), e, lineheight);
-				else if (e->map2[(int)e->xcam][(int)e->ycam] == 1 && e->map[e->zdoor[x].mapx][e->zdoor[x].mapy] == -2)
-					ft_put_door_line(x, texx, drawstart, drawend, abs(e->map[e->zdoor[x].mapx][e->zdoor[x].mapy]), e, lineheight);
-				else if (e->map[e->zdoor[x].mapx][e->zdoor[x].mapy] <= -3)
-					ft_put_door_line(x, texx, drawstart, drawend, abs(e->map[e->zdoor[x].mapx][e->zdoor[x].mapy]), e, lineheight);
+				pict.tex = abs(e->map[e->zdoor[pict.x].mapx][e->zdoor[pict.x].mapy]);
+				if (e->map2[(int)e->xcam][(int)e->ycam] == 0 && e->map[e->zdoor[pict.x].mapx][e->zdoor[pict.x].mapy] == -1)
+					ft_put_door_line(pict, e);
+				else if (e->map2[(int)e->xcam][(int)e->ycam] == 1 && e->map[e->zdoor[pict.x].mapx][e->zdoor[pict.x].mapy] == -2)
+					ft_put_door_line(pict, e);
+				else if (e->map[e->zdoor[pict.x].mapx][e->zdoor[pict.x].mapy] <= -3)
+					ft_put_door_line(pict, e);
 			}
-			if (e->map[e->zdoor[x].mapx][e->zdoor[x].mapy] == -1 && e->xdir < 0.5)
-				ft_put_text_line(x, texx, 2 * drawstart - drawend, drawstart, 5, e, 0, lineheight, 0, 0, 0);
+			if (e->map[e->zdoor[pict.x].mapx][e->zdoor[pict.x].mapy] == -1 && e->xdir < 0.5)
+			{
+				tmp = pict.drawstart;
+				pict.drawstart = 2 * pict.drawstart - pict.drawend;
+				pict.drawend = tmp;
+				pict.tex = 5;
+				ft_put_text_line(pict, e);
+			}
 		}
-		x++;
+		pict.x++;
 	}
 }
 
 void	ft_modim(t_env *e)
 {
-	int x;
+	t_pict	pict;
+	t_ray	ray;
+	int		hit;
+	int tmp;
 
-	x = 0;
-	while (x < SIZE_W)
+	pict.x = 0;
+	while (pict.x < SIZE_W)
 	{
-		double camerax = 2 * x /(double)SIZE_W - 1;
-		double rayposx = e->xcam;
-		double rayposy = e->ycam;
-		double raydirx = e->xdir + e->xscreen * camerax;
-		double raydiry = e->ydir + e->yscreen * camerax;
-		int mapx = (int)rayposx;
-		int mapy = (int)rayposy;
-		double sidedistx;
-		double sidedisty;
-		double deltadistx = sqrt(1 + (raydiry * raydiry) / (raydirx * raydirx));
-		double deltadisty = sqrt(1 + (raydirx * raydirx) / (raydiry * raydiry));
-		double perpwalldist;
-		int stepx;
-		int stepy;
-		int hit = 0;
-		int side;
-		if (raydirx < 0)
+		hit = 0;
+		ray.camerax = 2 * pict.x /(double)SIZE_W - 1;
+		ray.rayposx = e->xcam;
+		ray.rayposy = e->ycam;
+		ray.raydirx = e->xdir + e->xscreen * ray.camerax;
+		ray.raydiry = e->ydir + e->yscreen * ray.camerax;
+		ray.mapx = (int)(ray.rayposx);
+		ray.mapy = (int)(ray.rayposy);
+		ray.deltadistx = sqrt(1 + (ray.raydiry * ray.raydiry) / (ray.raydirx * ray.raydirx));
+		ray.deltadisty = sqrt(1 + (ray.raydirx * ray.raydirx) / (ray.raydiry * ray.raydiry));
+		if (ray.raydirx < 0)
 		{
-			stepx = -1;
-			sidedistx = (rayposx - mapx) * deltadistx;
+			ray.stepx = -1;
+			ray.sidedistx = (ray.rayposx - ray.mapx) * ray.deltadistx;
 		}
 		else
 		{
-			stepx = 1;
-			sidedistx = (1.0 - rayposx + mapx) * deltadistx;
+			ray.stepx = 1;
+			ray.sidedistx = (1.0 - ray.rayposx + ray.mapx) * ray.deltadistx;
 		}
-		if (raydiry < 0)
+		if (ray.raydiry < 0)
 		{
-			stepy = -1;
-			sidedisty = (rayposy - mapy) * deltadisty;
+			ray.stepy = -1;
+			ray.sidedisty = (ray.rayposy - ray.mapy) * ray.deltadisty;
 		}
 		else
 		{
-			stepy = 1;
-			sidedisty = (1.0 - rayposy + mapy) * deltadisty;
+			ray.stepy = 1;
+			ray.sidedisty = (1.0 - ray.rayposy + ray.mapy) * ray.deltadisty;
 		}
 		while (hit == 0)
 		{
-			if (sidedistx < sidedisty)
+			if (ray.sidedistx < ray.sidedisty)
 			{
-				sidedistx += deltadistx;
-				mapx += stepx;
-				side = 0;
+				ray.sidedistx += ray.deltadistx;
+				ray.mapx += ray.stepx;
+				pict.side = 0;
 			}
 			else
 			{
-				sidedisty += deltadisty;
-				mapy += stepy;
-				side = 1;
+				ray.sidedisty += ray.deltadisty;
+				ray.mapy += ray.stepy;
+				pict.side = 1;
 			}
-			if (e->map[mapx][mapy] > 0)
+			if (e->map[ray.mapx][ray.mapy] > 0)
 				hit = 1;
-			else if (e->map[mapx][mapy] <= -1)
+			else if (e->map[ray.mapx][ray.mapy] <= -1)
 			{
-				e->zisdoor[x] = 1;
-				e->zdoor[x].mapx = mapx;
-				e->zdoor[x].mapy = mapy;
-				e->zdoor[x].stepx = stepx;
-				e->zdoor[x].stepy = stepy;
-				e->zdoor[x].rayposx = rayposx;
-				e->zdoor[x].rayposy = rayposy;
-				e->zdoor[x].raydirx = raydirx;
-				e->zdoor[x].raydiry = raydiry;
-				e->zdoor[x].side = side;
+				e->zisdoor[pict.x] = 1;
+				e->zdoor[pict.x].mapx = ray.mapx;
+				e->zdoor[pict.x].mapy = ray.mapy;
+				e->zdoor[pict.x].stepx = ray.stepx;
+				e->zdoor[pict.x].stepy = ray.stepy;
+				e->zdoor[pict.x].rayposx = ray.rayposx;
+				e->zdoor[pict.x].rayposy = ray.rayposy;
+				e->zdoor[pict.x].raydirx = ray.raydirx;
+				e->zdoor[pict.x].raydiry = ray.raydiry;
+				e->zdoor[pict.x].side = pict.side;
 			}
 		}
-		if (side == 0)
-			perpwalldist = fabs((mapx - rayposx + (1 - stepx) /2) / raydirx);
+		if (pict.side == 0)
+			pict.perpwalldist = fabs((ray.mapx - ray.rayposx + (1 - ray.stepx) /2) / ray.raydirx);
 		else
-			perpwalldist = fabs((mapy - rayposy + (1 - stepy) /2) / raydiry);
-		e->zbuff[x] = perpwalldist;
-		int lineheight = (int)(SIZE_W / perpwalldist);
-		int drawstart = -lineheight / 2 + SIZE_W / 2;
-		if (drawstart < 0)
-			drawstart = 0;
-		int drawend = lineheight / 2 + SIZE_W / 2;
-		if (drawend > SIZE_W)
-			drawend = SIZE_W - 1;
-		double wallx;
-		if (side == 1)
-			wallx = rayposx + ((mapy - rayposy + (1 - stepy) / 2) / raydiry) * raydirx;
+			pict.perpwalldist = fabs((ray.mapy - ray.rayposy + (1 - ray.stepy) /2) / ray.raydiry);
+		e->zbuff[pict.x] = pict.perpwalldist;
+		pict.lineheight = (int)(SIZE_W / pict.perpwalldist);
+		pict.drawstart = -pict.lineheight / 2 + SIZE_W / 2;
+		if (pict.drawstart < 0)
+			pict.drawstart = 0;
+		pict.drawend = pict.lineheight / 2 + SIZE_W / 2;
+		if (pict.drawend > SIZE_W)
+			pict.drawend = SIZE_W - 1;
+		if (pict.side == 1)
+			ray.wallx = ray.rayposx + ((ray.mapy - ray.rayposy + (1 - ray.stepy) / 2) / ray.raydiry) * ray.raydirx;
 		else
-			wallx = rayposy + ((mapx - rayposx + (1 - stepx) / 2) / raydirx) * raydiry;
-		wallx -= floor(wallx);
-		int texx = (int)(wallx * (double)SIZE_T);
-		if (side == 0 && raydirx > 0)
-			texx = SIZE_T - texx - 1;
-		if (side == 1 && raydiry < 0)
-			texx = SIZE_T - texx - 1;
-		double floorxwall;
-		double floorywall;
-		if (side == 0 && raydirx > 0)
+			ray.wallx = ray.rayposy + ((ray.mapx - ray.rayposx + (1 - ray.stepx) / 2) / ray.raydirx) * ray.raydiry;
+		ray.wallx -= floor(ray.wallx);
+		pict.texx = (int)(ray.wallx * (double)SIZE_T);
+		if (pict.side == 0 && ray.raydirx > 0)
+			pict.texx = SIZE_T - pict.texx - 1;
+		if (pict.side == 1 && ray.raydiry < 0)
+			pict.texx = SIZE_T - pict.texx - 1;
+		if (pict.side == 0 && ray.raydirx > 0)
 		{
-			floorxwall = (double)mapx;
-			floorywall = (double)mapy + wallx;
+			pict.floorxwall = (double)(ray.mapx);
+			pict.floorywall = (double)(ray.mapy) + ray.wallx;
 		}
-		else if (side == 0 && raydirx < 0)
+		else if (pict.side == 0 && ray.raydirx < 0)
 		{
-			floorxwall = (double)mapx + 1.0;
-			floorywall = (double)mapy + wallx;
+			pict.floorxwall = (double)(ray.mapx) + 1.0;
+			pict.floorywall = (double)(ray.mapy) + ray.wallx;
 		}
-		else if (side == 1 && raydiry > 0)
+		else if (pict.side == 1 && ray.raydiry > 0)
 		{
-			floorxwall = (double)mapx + wallx;
-			floorywall = (double)mapy;
+			pict.floorxwall = (double)(ray.mapx) + (ray.wallx);
+			pict.floorywall = (double)(ray.mapy);
 		}
 		else
 		{
-			floorxwall = (double)mapx + wallx;
-			floorywall = (double)mapy + 1.0;
+			pict.floorxwall = (double)(ray.mapx) + (ray.wallx);
+			pict.floorywall = (double)(ray.mapy) + 1.0;
 		}
 		if (e->keytex == 0)
-			ft_putline(x, drawstart, drawend, e->map[mapx][mapy], e, side);
+		{
+			pict.tex = e->map[ray.mapx][ray.mapy];
+			ft_putline(pict, e);
+		}
 		else
-			ft_put_text_line(x, texx, drawstart, drawend, e->map[mapx][mapy], e, side, lineheight, perpwalldist, floorxwall, floorywall);
-		if (e->map[mapx][mapy] == 1 || (side == 0 && (e->map[mapx][mapy] == 21 || e->map[mapx][mapy] == 12)))
-			ft_put_text_line(x, texx, 2 * drawstart - drawend, drawstart, 5, e, side, lineheight, perpwalldist, floorxwall, floorywall);
-		x++;
+		{
+			pict.tex = e->map[ray.mapx][ray.mapy];
+			ft_put_text_line(pict, e);
+		}
+		if (e->map[ray.mapx][ray.mapy] == 1 || (pict.side == 0 && (e->map[ray.mapx][ray.mapy] == 21 || e->map[ray.mapx][ray.mapy] == 12)))
+		{
+			tmp = pict.drawstart;
+			pict.drawstart = 2 * pict.drawstart - pict.drawend;
+			pict.drawend = tmp;
+			pict.tex = 5;
+		//	ft_put_text_line(pict, e);
+		}
+		pict.x++;
 	}
 }
 

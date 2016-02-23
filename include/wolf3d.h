@@ -17,6 +17,37 @@ typedef struct	s_obj
 	double		dist;
 }				t_obj;
 
+typedef	struct s_ray
+{
+	double	camerax;
+	double	rayposx;
+	double	rayposy;
+	double	raydirx;
+	double	raydiry;
+	int		mapx;
+	int		mapy;
+	double	sidedistx;
+	double	sidedisty;
+	double	deltadistx;
+	double	deltadisty;
+	int		stepx;
+	int		stepy;
+	double	wallx;
+}				t_ray;
+
+typedef struct s_flo
+{
+	double	currentdist;
+	double	weight;
+	double	currentfloorx;
+	double	currentfloory;
+	int		floortexx;
+	int		floortexy;
+	int		x;
+	int 	y;
+	int		tex;
+}				t_flo;
+
 typedef struct s_tmpo
 {
 	double	xobj;
@@ -40,10 +71,16 @@ typedef struct s_pict
 	int			texy;
 	int			y;
 	int			x;
+	int			d;
 	int			tex;
 	int 		side;
 	int			drawstart;
 	int			drawend;
+	int			lineheight;
+	double		floorxwall;
+	double		floorywall;
+	double		perpwalldist;
+
 }				t_pict;
 
 typedef struct s_zdoor
@@ -121,7 +158,7 @@ void			ft_sort_obj(t_env *e);
 void			ft_read(int fd);
 void			put_pixelle(int x, int y, unsigned int *c, t_env *e);
 void			put_pixelle_sb(int x, int y, unsigned int *c, t_env *e);
-void			ft_putline(int x, int drawstart, int drawend, int wall, t_env *e, int side);
+void			ft_putline(t_pict pict, t_env *e);
 void			ft_put_skybox(t_env *e);
 void			ft_move_pause(t_env *e);
 void			ft_move_back_pause(t_env *e);
