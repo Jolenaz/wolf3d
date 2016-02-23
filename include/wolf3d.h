@@ -166,5 +166,20 @@ void			ft_take_pic(t_env *e);
 void			ft_show_pic(t_env *e);
 void			ft_check_vic(t_env *e);
 void			ft_put_obj(t_env *e);
+void			ft_modim(t_env *e);
+void			ft_put_text_line(t_pict pict, t_env *e);
+void			ft_cop_door(t_pict pict, t_env *e);
+void			ft_cop_wall(t_pict pict, t_env *e);
+void			ft_cop_floor(t_flo flo, t_env *e);
+void			ft_put_text_line(t_pict pict, t_env *e);
+int				mouse_hook(int b, int x, int y, t_env *e);
+int				mouse_move_hook(int x, int y, t_env *e);
+int				key_down_hook(int kc, t_env *e);
+int				key_up_hook(int kc, t_env *e);
+int				loop_hook(t_env *e);
+void			ft_open_door(t_env *e);
+void			ft_creat_img(t_env *e);
+void			ft_put_door(t_env *e);
+void			ft_init_buff(t_env *e);
 
 #endif

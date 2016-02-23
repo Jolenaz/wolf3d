@@ -72,6 +72,7 @@ SRC_NAME = main.c \
 		ft_read_map.c \
 		ft_print_map.c \
 		ft_creat_env.c \
+		ft_creat_img.c \
 		ft_sort_obj.c \
 		ft_creat_obj_env.c \
 		ft_put_pixelle.c \
@@ -79,6 +80,16 @@ SRC_NAME = main.c \
 		ft_put_obj.c \
 		ft_put_sky.c \
 		ft_even1.c \
+		ft_even2.c \
+		ft_modim.c \
+		ft_cop.c \
+		ft_put_text_line.c \
+		ft_mouse_hook.c \
+		ft_mouse_move_hook.c \
+		ft_key_down_hook.c \
+		ft_key_up_hook.c \
+		ft_loop_hook.c \
+		ft_put_door.c \
 
 OBJ_NAME = $(SRC_NAME:.c=.o)
 
