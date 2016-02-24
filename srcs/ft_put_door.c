@@ -6,7 +6,7 @@
 /*   By: jbelless <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/02/23 15:37:22 by jbelless          #+#    #+#             */
-/*   Updated: 2016/02/23 15:38:58 by jbelless         ###   ########.fr       */
+/*   Updated: 2016/02/24 14:28:50 by jbelless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ void	ft_put_door(t_env *e)
 			else if (e->keytex == 1)
 			{
 				pict.tex = abs(e->map[e->zdoor[pict.x].mapx][e->zdoor[pict.x].mapy]);
-				if (e->map2[(int)e->xcam][(int)e->ycam] == 0 && e->map[e->zdoor[pict.x].mapx][e->zdoor[pict.x].mapy] == -1)
+				if ((e->map2[(int)e->xcam][(int)e->ycam] == 0 || e->map2[(int)e->xcam][(int)e->ycam] == 21 ) && e->map[e->zdoor[pict.x].mapx][e->zdoor[pict.x].mapy] == -1)
 					ft_put_door_line(pict, e);
 				else if (e->map2[(int)e->xcam][(int)e->ycam] == 1 && e->map[e->zdoor[pict.x].mapx][e->zdoor[pict.x].mapy] == -2)
 					ft_put_door_line(pict, e);

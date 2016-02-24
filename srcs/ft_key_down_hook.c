@@ -6,7 +6,7 @@
 /*   By: jbelless <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/02/23 15:25:30 by jbelless          #+#    #+#             */
-/*   Updated: 2016/02/23 15:26:30 by jbelless         ###   ########.fr       */
+/*   Updated: 2016/02/24 12:15:49 by jbelless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ int		key_down_hook(int kc, t_env *e)
 	}
 	if (kc == 53 && e->pause == 0)
 		e->key53 = 1;
-	if (kc == 53 && e->pause == 1)
+	if (kc == 53 && e->pause == 1 && e->help == 0)
 		e->key53 = 0;
 	if (e->pause == 0)
 		ft_creat_img(e);

@@ -6,7 +6,7 @@
 /*   By: jbelless <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/02/23 15:40:38 by jbelless          #+#    #+#             */
-/*   Updated: 2016/02/23 15:42:53 by jbelless         ###   ########.fr       */
+/*   Updated: 2016/02/24 14:17:11 by jbelless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@ void	ft_creat_img(t_env *e)
 	mlx_put_image_to_window(e->mlx, e->win, e->img[0], 0, 0);
 	if (e->key53)
 		ft_move_pause(e);
-	else if (e->key53 == 0 && e->pause)
+	else if (e->key53 == 0 && e->pause && e->vic == 0)
 		ft_move_back_pause(e);
 	else if (e->take == 1)
 		ft_take_pic(e);
@@ -91,5 +91,7 @@ void	ft_creat_img(t_env *e)
 		mlx_put_image_to_window(e->mlx, e->win, e->img_bras[0], 250, 650);
 	if (e->qr)
 		mlx_put_image_to_window(e->mlx, e->win, e->img_bras[30 + e->qr], 0, 600);
+	if (e->vic)
+		mlx_put_image_to_window(e->mlx, e->win, e->img_bras[24], 0, 0);
 	mlx_destroy_image(e->mlx, e->img[0]);
 }

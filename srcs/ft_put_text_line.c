@@ -6,7 +6,7 @@
 /*   By: jbelless <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/02/23 14:58:48 by jbelless          #+#    #+#             */
-/*   Updated: 2016/02/23 15:11:33 by jbelless         ###   ########.fr       */
+/*   Updated: 2016/02/24 14:26:31 by jbelless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,9 @@ void	ft_put_text_line(t_pict pict, t_env *e)
 					flo.tex = e->map2[(int)(flo.currentfloorx)][(int)(flo.currentfloory)];
 					ft_cop_floor(flo, e);
 				}
-				else if (e->map2[(int)(flo.currentfloorx)][(int)(flo.currentfloory)] == 0)
+				else if (e->map2[(int)(flo.currentfloorx)][(int)(flo.currentfloory)] == 0 || e->map2[(int)(flo.currentfloorx)][(int)(flo.currentfloory)] == 21 )
 				{
-					flo.tex = 0;
+					flo.tex = e->map2[(int)(flo.currentfloorx)][(int)(flo.currentfloory)];
 					flo.y = pict.y;
 					ft_cop_floor(flo, e);
 				}

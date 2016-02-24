@@ -20,7 +20,7 @@ void	ft_put_skybox(t_env *e)
 {
 	t_pict pict;
 
-	if (e->map2[(int)e->xcam][(int)e->ycam] <= 2)
+	if (e->map2[(int)e->xcam][(int)e->ycam] <= 2 || e->map2[(int)e->xcam][(int)e->ycam] == 21 )
 		pict.tex = 2;
 	else 
 		pict.tex = 3;

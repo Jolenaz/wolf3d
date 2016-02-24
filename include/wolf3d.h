@@ -17,6 +17,13 @@ typedef struct	s_obj
 	double		dist;
 }				t_obj;
 
+typedef struct s_data
+{
+	int			bpp;
+	int			ls;
+	int			endian;
+}				t_data;
+
 typedef	struct s_ray
 {
 	double	camerax;
@@ -181,5 +188,12 @@ void			ft_open_door(t_env *e);
 void			ft_creat_img(t_env *e);
 void			ft_put_door(t_env *e);
 void			ft_init_buff(t_env *e);
+void			ft_init_wimg(t_env *e);
+void			ft_init_fimg(t_env *e);
+void			ft_init_dsbimg(t_env *e);
+void			ft_init_oimg(t_env *e);
+void			ft_init_b1_img(t_env *e);
+void			ft_init_b2_img(t_env *e);
+void			ft_init_malloc(t_env *e);
 
 #endif

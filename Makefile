@@ -90,6 +90,8 @@ SRC_NAME = main.c \
 		ft_key_up_hook.c \
 		ft_loop_hook.c \
 		ft_put_door.c \
+		ft_init_im.c \
+		ft_init_im2.c \
 
 OBJ_NAME = $(SRC_NAME:.c=.o)
 

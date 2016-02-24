@@ -95,8 +95,6 @@ void	ft_check_vic(t_env *e)
 		e->vic = 1;
 		e->pause = 1;
 		e->key53 = 1;
-		mlx_put_image_to_window(e->mlx, e->win, e->img_bras[7], 0, 0);
 	}
-
 }
 
