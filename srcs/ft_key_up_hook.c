@@ -6,7 +6,7 @@
 /*   By: jbelless <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/02/23 15:28:05 by jbelless          #+#    #+#             */
-/*   Updated: 2016/02/23 15:30:36 by jbelless         ###   ########.fr       */
+/*   Updated: 2016/02/24 16:03:48 by jbelless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,6 @@ int		key_up_hook(int kc, t_env *e)
 	if (kc == 17 && e->keytex)
 		e->keytex = 0;
 	else if (kc == 17)
-		e->keytex = 1;	
+		e->keytex = 1;
 	return (0);
 }

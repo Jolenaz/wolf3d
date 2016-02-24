@@ -92,6 +92,7 @@ SRC_NAME = main.c \
 		ft_put_door.c \
 		ft_init_im.c \
 		ft_init_im2.c \
+		ft_key_move.c \
 
 OBJ_NAME = $(SRC_NAME:.c=.o)
 

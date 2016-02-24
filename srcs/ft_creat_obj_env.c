@@ -6,7 +6,7 @@
 /*   By: jbelless <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/02/06 20:42:50 by jbelless          #+#    #+#             */
-/*   Updated: 2016/02/15 12:25:43 by jbelless         ###   ########.fr       */
+/*   Updated: 2016/02/24 15:30:17 by jbelless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,9 @@
 
 void	ft_init_tabobj(t_env *e)
 {
-	int		i;
-	int 	j;
-	int 	l;
+	int	i;
+	int	j;
+	int	l;
 
 	i = 0;
 	l = 0;
@@ -66,5 +66,4 @@ void	ft_creat_obj_env(t_env *e)
 	e->nbobj = ft_nb_obj(e);
 	e->tabobj = (t_obj*)malloc(sizeof(t_obj) * e->nbobj);
 	ft_init_tabobj(e);
-//	ft_print_tabobj(e);
 }

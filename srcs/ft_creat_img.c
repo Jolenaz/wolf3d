@@ -6,17 +6,17 @@
 /*   By: jbelless <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/02/23 15:40:38 by jbelless          #+#    #+#             */
-/*   Updated: 2016/02/24 14:17:11 by jbelless         ###   ########.fr       */
+/*   Updated: 2016/02/24 15:25:29 by jbelless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "wolf3d.h"
 
-void	ft_init_ob_im(t_env *e)
+void		ft_init_ob_im(t_env *e)
 {
-	unsigned int couleur;
-	int x;
-	int y;
+	unsigned int	couleur;
+	int				x;
+	int				y;
 
 	couleur = 0xff000000;
 	x = 0;
@@ -25,7 +25,6 @@ void	ft_init_ob_im(t_env *e)
 		y = 0;
 		while (y < SIZE_W)
 		{
-
 			put_pixelle(x, y, &couleur, e);
 			y++;
 		}
@@ -33,7 +32,7 @@ void	ft_init_ob_im(t_env *e)
 	}
 }
 
-void	ft_init_buff(t_env *e)
+void		ft_init_buff(t_env *e)
 {
 	int x;
 
@@ -52,10 +51,41 @@ void	ft_init_buff(t_env *e)
 		e->zdoor[x].raydiry = 0.0;
 		x++;
 	}
-
 }
 
-void	ft_creat_img(t_env *e)
+static void	ft_calc(t_env *e)
+{
+	ft_init_ob_im(e);
+	ft_check_vic(e);
+	mlx_clear_window(e->mlx, e->win);
+	ft_init_buff(e);
+	ft_sort_obj(e);
+	ft_put_skybox(e);
+	ft_modim(e);
+	ft_put_door(e);
+	ft_put_obj(e);
+}
+
+static void	ft_if_event(t_env *e)
+{
+	if (e->key53)
+		ft_move_pause(e);
+	else if (e->key53 == 0 && e->pause && e->vic == 0)
+		ft_move_back_pause(e);
+	else if (e->take == 1)
+		ft_take_pic(e);
+	else if (e->show == 1)
+		ft_show_pic(e);
+	else
+		mlx_put_image_to_window(e->mlx, e->win, e->img_bras[0], 250, 650);
+	if (e->qr)
+		mlx_put_image_to_window(e->mlx, e->win, e->img_bras[30 +
+				e->qr], 0, 600);
+	if (e->vic)
+		mlx_put_image_to_window(e->mlx, e->win, e->img_bras[24], 0, 0);
+}
+
+void		ft_creat_img(t_env *e)
 {
 	int bpp;
 	int ls;
@@ -68,30 +98,9 @@ void	ft_creat_img(t_env *e)
 	e->img[1] = mlx_new_image(e->mlx, SIZE_W, SIZE_W);
 	e->data[0] = mlx_get_data_addr(e->img[0], &bpp, &ls, &endian);
 	e->data[1] = mlx_get_data_addr(e->img[1], &bpp, &ls, &endian);
-	ft_init_ob_im(e);
-	ft_check_vic(e);
-	mlx_clear_window(e->mlx, e->win);
-	ft_init_buff(e);
-	ft_sort_obj(e);
-	ft_put_skybox(e);
-	ft_modim(e);
-	ft_put_door(e);
-	ft_put_obj(e);
+	ft_calc(e);
 	mlx_put_image_to_window(e->mlx, e->win, e->img[1], 0, 0);
 	mlx_put_image_to_window(e->mlx, e->win, e->img[0], 0, 0);
-	if (e->key53)
-		ft_move_pause(e);
-	else if (e->key53 == 0 && e->pause && e->vic == 0)
-		ft_move_back_pause(e);
-	else if (e->take == 1)
-		ft_take_pic(e);
-	else if (e->show == 1)
-		ft_show_pic(e);
-	else
-		mlx_put_image_to_window(e->mlx, e->win, e->img_bras[0], 250, 650);
-	if (e->qr)
-		mlx_put_image_to_window(e->mlx, e->win, e->img_bras[30 + e->qr], 0, 600);
-	if (e->vic)
-		mlx_put_image_to_window(e->mlx, e->win, e->img_bras[24], 0, 0);
+	ft_if_event(e);
 	mlx_destroy_image(e->mlx, e->img[0]);
 }

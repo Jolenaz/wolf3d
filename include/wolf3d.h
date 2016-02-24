@@ -195,5 +195,9 @@ void			ft_init_oimg(t_env *e);
 void			ft_init_b1_img(t_env *e);
 void			ft_init_b2_img(t_env *e);
 void			ft_init_malloc(t_env *e);
+void			ft_key_a(t_env *e, double l);
+void			ft_key_b(t_env *e, double l);
+void			ft_key_c(t_env *e, double l);
+void			ft_key_d(t_env *e, double l);
 
 #endif
