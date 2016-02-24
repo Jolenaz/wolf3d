@@ -70,7 +70,6 @@ put_title = echo "\033[38;5;$(TITLE_COLOR)m[ $(1) ]\033[0m"
 #==================#
 SRC_NAME = main.c \
 		ft_read_map.c \
-		ft_print_map.c \
 		ft_creat_env.c \
 		ft_creat_img.c \
 		ft_sort_obj.c \
@@ -82,6 +81,7 @@ SRC_NAME = main.c \
 		ft_even1.c \
 		ft_even2.c \
 		ft_modim.c \
+		ft_modim_suite.c \
 		ft_cop.c \
 		ft_put_text_line.c \
 		ft_mouse_hook.c \

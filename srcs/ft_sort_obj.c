@@ -6,7 +6,7 @@
 /*   By: jbelless <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/02/06 21:11:32 by jbelless          #+#    #+#             */
-/*   Updated: 2016/02/15 09:14:25 by jbelless         ###   ########.fr       */
+/*   Updated: 2016/02/24 17:10:01 by jbelless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ void	ft_sort_obj(t_env *e)
 	j = 0;
 	rep = 1;
 	ft_calc_dist(e);
-//	ft_print_tabobj(e);
 	while (j < e->nbobj && rep)
 	{
 		rep = 0;
@@ -59,5 +58,4 @@ void	ft_sort_obj(t_env *e)
 		}
 		j++;
 	}
-//	ft_print_tabobj(e);
 }

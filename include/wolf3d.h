@@ -1,9 +1,20 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   wolf3d.h                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jbelless <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2016/02/24 17:14:21 by jbelless          #+#    #+#             */
+/*   Updated: 2016/02/24 17:17:21 by jbelless         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef WOLF3D_H
 # define WOLF3D_H
 # define SIZE_W 1000
 # define SIZE_T 200
 # define SIZE_O 200
-
 # include "mlx.h"
 # include "libft.h"
 # include <math.h>
@@ -17,62 +28,62 @@ typedef struct	s_obj
 	double		dist;
 }				t_obj;
 
-typedef struct s_data
+typedef struct	s_data
 {
 	int			bpp;
 	int			ls;
 	int			endian;
 }				t_data;
 
-typedef	struct s_ray
+typedef	struct	s_ray
 {
-	double	camerax;
-	double	rayposx;
-	double	rayposy;
-	double	raydirx;
-	double	raydiry;
-	int		mapx;
-	int		mapy;
-	double	sidedistx;
-	double	sidedisty;
-	double	deltadistx;
-	double	deltadisty;
-	int		stepx;
-	int		stepy;
-	double	wallx;
+	double		camerax;
+	double		rayposx;
+	double		rayposy;
+	double		raydirx;
+	double		raydiry;
+	int			mapx;
+	int			mapy;
+	double		sidedistx;
+	double		sidedisty;
+	double		deltadistx;
+	double		deltadisty;
+	int			stepx;
+	int			stepy;
+	double		wallx;
 }				t_ray;
 
-typedef struct s_flo
+typedef struct	s_flo
 {
-	double	currentdist;
-	double	weight;
-	double	currentfloorx;
-	double	currentfloory;
-	int		floortexx;
-	int		floortexy;
-	int		x;
-	int 	y;
-	int		tex;
+	double		currentdist;
+	double		weight;
+	double		currentfloorx;
+	double		currentfloory;
+	int			floortexx;
+	int			floortexy;
+	int			x;
+	int			y;
+	int			tex;
 }				t_flo;
 
-typedef struct s_tmpo
+typedef struct	s_tmpo
 {
-	double	xobj;
-	double	yobj;
-	double	invdev;
-	double	transformx;
-	double	transformy;
-	int		xscreenobj;
-	int		drawstarty;
-	int		drawendy;
-	int		objwidth;
-	int		objheight;
-	int		drawstartx;
-	int		drawendx;
-	int		d;	
+	double		xobj;
+	double		yobj;
+	double		invdev;
+	double		transformx;
+	double		transformy;
+	int			xscreenobj;
+	int			drawstarty;
+	int			drawendy;
+	int			objwidth;
+	int			objheight;
+	int			drawstartx;
+	int			drawendx;
+	int			d;
 }				t_tmpo;
 
-typedef struct s_pict
+typedef struct	s_pict
 {
 	int			texx;
 	int			texy;
@@ -80,7 +91,7 @@ typedef struct s_pict
 	int			x;
 	int			d;
 	int			tex;
-	int 		side;
+	int			side;
 	int			drawstart;
 	int			drawend;
 	int			lineheight;
@@ -90,7 +101,7 @@ typedef struct s_pict
 
 }				t_pict;
 
-typedef struct s_zdoor
+typedef struct	s_zdoor
 {
 	int			mapx;
 	int			mapy;
@@ -155,10 +166,6 @@ typedef struct	s_env
 	int			dd;
 }				t_env;
 
-void			ft_print_map(t_env *e);
-void			ft_print_map2(t_env *e);
-void			ft_print_map3(t_env *e);
-void			ft_print_tabobj(t_env *e);
 void			ft_creat_env(t_env *e);
 void			ft_creat_obj_env(t_env *e);
 void			ft_sort_obj(t_env *e);
@@ -174,6 +181,7 @@ void			ft_show_pic(t_env *e);
 void			ft_check_vic(t_env *e);
 void			ft_put_obj(t_env *e);
 void			ft_modim(t_env *e);
+void			ft_modim_suite(t_env *e, t_ray *ray, t_pict *pict);
 void			ft_put_text_line(t_pict pict, t_env *e);
 void			ft_cop_door(t_pict pict, t_env *e);
 void			ft_cop_wall(t_pict pict, t_env *e);
