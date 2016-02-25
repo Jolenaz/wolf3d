@@ -6,17 +6,17 @@
 /*   By: jbelless <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2015/12/03 12:44:26 by jbelless          #+#    #+#             */
-/*   Updated: 2016/02/19 18:28:05 by jbelless         ###   ########.fr       */
+/*   Updated: 2016/02/25 10:54:09 by jbelless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 #define BUFF_SIZE 1
 
-static	char *ft_strjoin_free(char *line, char *buff)
+static char	*ft_strjoin_free(char *line, char *buff)
 {
 	char *vid;
-	
+
 	vid = ft_strjoin(line, buff);
 	free(line);
 	return (vid);

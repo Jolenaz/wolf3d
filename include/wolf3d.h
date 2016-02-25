@@ -6,7 +6,7 @@
 /*   By: jbelless <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2016/02/24 17:14:21 by jbelless          #+#    #+#             */
-/*   Updated: 2016/02/24 17:17:21 by jbelless         ###   ########.fr       */
+/*   Updated: 2016/02/25 10:51:04 by jbelless         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,8 @@ typedef struct	s_flo
 {
 	double		currentdist;
 	double		weight;
-	double		currentfloorx;
-	double		currentfloory;
+	double		currentfx;
+	double		currentfy;
 	int			floortexx;
 	int			floortexy;
 	int			x;
@@ -168,33 +168,34 @@ typedef struct	s_env
 
 void			ft_creat_env(t_env *e);
 void			ft_creat_obj_env(t_env *e);
+void			ft_creat_img(t_env *e);
 void			ft_sort_obj(t_env *e);
 void			ft_read(int fd);
 void			put_pixelle(int x, int y, unsigned int *c, t_env *e);
 void			put_pixelle_sb(int x, int y, unsigned int *c, t_env *e);
 void			ft_putline(t_pict pict, t_env *e);
+void			ft_put_text_line(t_pict pict, t_env *e);
+void			ft_put_obj(t_env *e);
 void			ft_put_skybox(t_env *e);
+void			ft_put_door(t_env *e);
+void			ft_put_door2(t_env *e, t_pict *pict);
+void			ft_put_door_line(t_pict pict, t_env *e);
 void			ft_move_pause(t_env *e);
 void			ft_move_back_pause(t_env *e);
 void			ft_take_pic(t_env *e);
 void			ft_show_pic(t_env *e);
 void			ft_check_vic(t_env *e);
-void			ft_put_obj(t_env *e);
 void			ft_modim(t_env *e);
 void			ft_modim_suite(t_env *e, t_ray *ray, t_pict *pict);
-void			ft_put_text_line(t_pict pict, t_env *e);
 void			ft_cop_door(t_pict pict, t_env *e);
 void			ft_cop_wall(t_pict pict, t_env *e);
 void			ft_cop_floor(t_flo flo, t_env *e);
-void			ft_put_text_line(t_pict pict, t_env *e);
 int				mouse_hook(int b, int x, int y, t_env *e);
 int				mouse_move_hook(int x, int y, t_env *e);
 int				key_down_hook(int kc, t_env *e);
 int				key_up_hook(int kc, t_env *e);
 int				loop_hook(t_env *e);
 void			ft_open_door(t_env *e);
-void			ft_creat_img(t_env *e);
-void			ft_put_door(t_env *e);
 void			ft_init_buff(t_env *e);
 void			ft_init_wimg(t_env *e);
 void			ft_init_fimg(t_env *e);

@@ -90,6 +90,7 @@ SRC_NAME = main.c \
 		ft_key_up_hook.c \
 		ft_loop_hook.c \
 		ft_put_door.c \
+		ft_put_door2.c \
 		ft_init_im.c \
 		ft_init_im2.c \
 		ft_key_move.c \
